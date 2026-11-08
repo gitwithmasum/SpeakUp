@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b16">
+  <title>SpeakUp</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand"><span class="logo">◉</span> SpeakUp</div>
+    <div class="streak" id="streakChip" title="Daily streak">🔥 <b id="streakNum">0</b></div>
+  </header>
+
+  <main id="app">
+
+    <!-- SPEAKING -->
+    <section class="view active" id="view-speak">
+      <div class="panel setup">
+        <label>Topic
+          <select id="topicSelect">
+            <option>Daily life</option>
+            <option>Food &amp; cooking</option>
+            <option>Travel</option>
+            <option>Job interview</option>
+            <option>Technology</option>
+            <option>Movies &amp; music</option>
+            <option>Free talk</option>
+          </select>
+        </label>
+        <label>Level
+          <select id="levelSelect">
+            <option>beginner</option>
+            <option selected>intermediate</option>
+            <option>advanced</option>
+          </select>
+        </label>
+        <button class="btn ghost" id="newChat">New chat</button>
+      </div>
+
+      <div class="chat" id="chat" aria-live="polite"></div>
+
+      <div class="composer">
+        <input id="chatInput" type="text" placeholder="Type or tap the mic and speak…" autocomplete="off">
+        <button class="btn" id="sendBtn">Send</button>
+      </div>
+      <div class="mic-wrap">
+        <button class="mic" id="micBtn" aria-label="Start speaking">🎤</button>
+        <div class="mic-hint" id="micHint">Tap to speak</div>
+      </div>
+    </section>
+
+    <!-- WRITING -->
+    <section class="view" id="view-write">
+      <div class="panel">
+        <div class="eyebrow">Writing task</div>
+        <p class="task" id="writePrompt">Loading…</p>
+        <p class="hint" id="writeHint"></p>
+        <textarea id="writeInput" rows="5" placeholder="Write your answer in English…"></textarea>
+        <div class="row">
+          <button class="btn" id="writeCheck">Check my writing</button>
+          <button class="btn ghost" id="writeNew">New task</button>
+        </div>
+      </div>
+      <div id="writeResult"></div>
+    </section>
+
+    <!-- READING -->
+    <section class="view" id="view-read">
+      <div class="panel">
+        <div class="eyebrow">Reading practice</div>
+        <h2 id="readTitle">Loading…</h2>
+        <p class="passage" id="readPassage"></p>
+        <div class="row">
+          <button class="btn ghost" id="readListen">🔊 Listen</button>
+          <button class="btn ghost" id="readNew">New passage</button>
+        </div>
+      </div>
+      <div id="readQuiz"></div>
+    </section>
+
+    <!-- VOCAB -->
+    <section class="view" id="view-vocab">
+      <div class="panel">
+        <div class="eyebrow">Review</div>
+        <div id="reviewBox" class="review"></div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Add a word</div>
+        <div class="row">
+          <input id="vWord" type="text" placeholder="Word">
+          <input id="vMeaning" type="text" placeholder="Meaning">
+        </div>
+        <input id="vExample" type="text" placeholder="Example sentence (optional)">
+        <button class="btn" id="vAdd">Save word</button>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Notebook · <span id="vCount">0</span> words</div>
+        <ul class="vlist" id="vList"></ul>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="view" id="view-progress">
+      <div class="stats">
+        <div class="stat"><b id="stStreak">0</b><span>Day streak</span></div>
+        <div class="stat"><b id="stAcc">0%</b><span>Accuracy</span></div>
+        <div class="stat"><b id="stMin">0</b><span>Speaking min</span></div>
+        <div class="stat"><b id="stChecks">0</b><span>Checks</span></div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Last 7 days (checks)</div>
+        <div class="bars" id="weekBars"></div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Common mistakes</div>
+        <div id="mistakeList"></div>
+      </div>
+      <div class="panel">
+        <button class="btn ghost danger" id="resetData">Reset all data</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <nav class="tabs" id="tabs">
+    <button data-view="speak" class="on">🗣️<span>Speak</span></button>
+    <button data-view="write">✍️<span>Write</span></button>
+    <button data-view="read">📖<span>Read</span></button>
+    <button data-view="vocab">📚<span>Vocab</span></button>
+    <button data-view="progress">📈<span>Progress</span></button>
+  </nav>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
