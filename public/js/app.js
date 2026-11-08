@@ -77,14 +77,27 @@
     updateStreak();
   }
 
-  /* ---------- speech ---------- */
+  /* ---------- speech (Young Female Voice, ~20 years old) ---------- */
+  function getYoungFemaleVoice() {
+    const list = speechSynthesis.getVoices();
+    const prefs = ['jenny', 'ava', 'aria', 'samantha', 'victoria', 'sonia', 'ana', 'karen', 'zira', 'google us english'];
+    for (const p of prefs) {
+      const match = list.find((v) => v.lang.startsWith('en') && v.name.toLowerCase().includes(p) && !/(male|guy)/i.test(v.name));
+      if (match) return match;
+    }
+    const female = list.find((v) => v.lang.startsWith('en') && /(female|woman)/i.test(v.name));
+    if (female) return female;
+    return list.find((v) => v.lang.startsWith('en') && !/(david|mark|guy|george|daniel|male)/i.test(v.name)) || list.find((v) => v.lang.startsWith('en'));
+  }
+
   function speak(text, rate) {
     if (!('speechSynthesis' in window)) return toast('Text-to-speech is not supported here.', true);
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'en-US';
-    u.rate = rate || 0.95;
-    const v = speechSynthesis.getVoices().find((x) => /en[-_]US/i.test(x.lang));
+    u.rate = rate || 1.02;
+    u.pitch = 1.14; // Youthful female acoustic resonance
+    const v = getYoungFemaleVoice();
     if (v) u.voice = v;
     speechSynthesis.speak(u);
   }

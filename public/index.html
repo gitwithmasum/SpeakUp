@@ -607,19 +607,50 @@
       document.getElementById('micBtn').classList.remove('bg-rose-950/70', 'border-rose-500', 'text-rose-200');
     }
 
-    // Text to Speech Engine
+    // Helper to get natural youthful female voice (~20 years old)
+    function getYoungFemaleVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+
+      const preferredNames = [
+        'jenny', 'ava', 'aria', 'samantha', 'victoria', 
+        'sonia', 'ana', 'karen', 'zira', 'google us english'
+      ];
+
+      for (const name of preferredNames) {
+        const found = voices.find(v => 
+          v.lang.startsWith('en') && 
+          v.name.toLowerCase().includes(name) &&
+          !/(male|guy)/i.test(v.name)
+        );
+        if (found) return found;
+      }
+
+      const femaleEn = voices.find(v => 
+        v.lang.startsWith('en') && 
+        /(female|woman)/i.test(v.name)
+      );
+      if (femaleEn) return femaleEn;
+
+      const nonMaleEn = voices.find(v => 
+        v.lang.startsWith('en') && 
+        !/(david|mark|guy|george|daniel|richard|ryan|james|male)/i.test(v.name)
+      );
+      return nonMaleEn || voices.find(v => v.lang.startsWith('en')) || voices[0];
+    }
+
+    // Text to Speech Engine (Ciri: Native Young Female Voice ~20 yrs old)
     function speakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.0;
+      utterance.rate = 1.02;  // Upbeat, lively, modern cadence
+      utterance.pitch = 1.14; // Youthful ~20yo female acoustic resonance
+      utterance.volume = 1.0;
 
-      const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Jenny')) && v.lang.startsWith('en'))
-                            || voices.find(v => v.lang.startsWith('en'));
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
+      const femaleVoice = getYoungFemaleVoice();
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
       }
       window.speechSynthesis.speak(utterance);
     }
