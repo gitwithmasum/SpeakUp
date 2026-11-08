@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SpeakUp — Ciri AI Real-Time English Simulator</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <meta name="theme-color" content="#4f46e5">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes pulse-ring {
@@ -72,6 +75,10 @@
         <button id="toggleVoiceBtn" onclick="toggleTtsAutoPlay()" title="Toggle voice autoplay" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition cursor-pointer">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
           <span id="ttsStatusLabel" class="text-xs font-medium">Voice: ON</span>
+        </button>
+        <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition cursor-pointer" title="Install SpeakUp as an App">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span class="text-xs font-medium">Install App</span>
         </button>
       </div>
     </div>
@@ -830,6 +837,29 @@
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    // PWA Install Prompt Logic
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('pwaInstallBtn').classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert("To install SpeakUp on desktop or phone:\n• In Chrome/Edge: Click the 'Install SpeakUp' icon in your browser URL bar or browser menu (⋮) -> 'Install SpeakUp' or 'Add to Home screen'.");
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.onvoiceschanged = () => {
@@ -837,6 +867,10 @@
         };
       }
       initSpeechRecognition();
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg error:', err));
+      }
     });
   </script>
 </body>
