@@ -93,11 +93,11 @@
 
       <!-- Quick Metrics Tracker (Segmented Glass Toolbar) -->
       <div class="flex items-center gap-2 flex-wrap text-xs">
-        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/90 border border-slate-800/80 shadow-inner">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="text-slate-400">Practiced:</span>
+        <button onclick="switchTab('history')" title="View Practice History (কতগুলো বাক্য প্র্যাকটিস করেছ)" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/90 hover:bg-slate-900 border border-slate-800/80 hover:border-emerald-500/50 shadow-inner transition cursor-pointer">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition"></span>
+          <span class="text-slate-400 group-hover:text-slate-200 transition">Practiced:</span>
           <span id="metricPracticed" class="font-bold text-emerald-400 font-mono">0</span>
-        </div>
+        </button>
         <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/90 border border-slate-800/80 shadow-inner">
           <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
           <span class="text-slate-400">Native Flow:</span>
@@ -133,6 +133,11 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
         Study Notes
         <span id="notesCountBadge" class="px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 rounded-full font-bold">0</span>
+      </button>
+      <button onclick="switchTab('history')" id="tabHistory" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Practice History
+        <span id="historyCountBadge" class="px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 rounded-full font-bold">0</span>
       </button>
     </div>
 
@@ -407,6 +412,32 @@
 
       <!-- Notes Cards List -->
       <div id="notesList" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 5: PRACTICE HISTORY -->
+    <div id="viewHistory" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>📜 Practice History (অনুশীলন ইতিহাস)</span>
+            <span id="historyTotalTag" class="px-2.5 py-0.5 text-xs bg-emerald-500/20 text-emerald-400 rounded-full font-bold">0 sentences</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" id="historySummaryText">All your practiced sentences tracked in one place with accuracy and native versions.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button onclick="filterHistory('all')" class="history-filter-btn active px-3 py-1 text-xs rounded-lg bg-indigo-600 text-white font-semibold transition">All</button>
+            <button onclick="filterHistory('correct')" class="history-filter-btn px-3 py-1 text-xs rounded-lg text-slate-400 hover:text-white font-medium transition">✅ Correct</button>
+            <button onclick="filterHistory('polished')" class="history-filter-btn px-3 py-1 text-xs rounded-lg text-slate-400 hover:text-white font-medium transition">❌ Polished</button>
+          </div>
+          <button onclick="clearAllHistory()" class="px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-rose-900/40 rounded-xl transition cursor-pointer font-medium">Clear History</button>
+        </div>
+      </div>
+
+      <!-- History Cards List -->
+      <div id="historyList" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
         <!-- Injected via JS -->
       </div>
     </div>
@@ -768,13 +799,15 @@
 
     // Tab Switching
     let currentNotesFilter = 'all';
+    let currentHistoryFilter = 'all';
     function switchTab(tabId) {
       document.getElementById('viewArena').classList.add('hidden');
       document.getElementById('viewChallenges').classList.add('hidden');
       document.getElementById('viewCommonMistakes').classList.add('hidden');
       document.getElementById('viewNotes').classList.add('hidden');
+      document.getElementById('viewHistory').classList.add('hidden');
 
-      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes', 'tabNotes'];
+      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes', 'tabNotes', 'tabHistory'];
       tabs.forEach(t => {
         const btn = document.getElementById(t);
         if (btn) {
@@ -805,6 +838,12 @@
         activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
         activeBtn.classList.remove('text-slate-400');
         renderNotes(currentNotesFilter);
+      } else if (tabId === 'history') {
+        document.getElementById('viewHistory').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabHistory');
+        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+        activeBtn.classList.remove('text-slate-400');
+        renderHistory(currentHistoryFilter);
       }
     }
 
@@ -875,9 +914,6 @@
     function runAnalysis() {
       const rawText = document.getElementById('userInput').value.trim();
       if (!rawText) return;
-
-      practicedCount++;
-      document.getElementById('metricPracticed').innerText = practicedCount;
 
       let matchedRule = null;
       for (const rule of correctionRules) {
@@ -980,6 +1016,11 @@
 
       // Update the 3 Note buttons (+ to ✓ if already saved)
       updateNoteButtonsState();
+
+      // Record sentence in Practice History
+      if (!data.isDrillPrompt) {
+        recordPracticeSentence(data);
+      }
 
       const audioTrigger = document.getElementById('pronunciationAudioTrigger');
       audioTrigger.onclick = () => speakText(data.pronunciation.split(':')[0] || data.correct);
@@ -1231,6 +1272,167 @@
       });
     }
 
+    // Practice History System Logic
+    function getPracticeHistory() {
+      try {
+        return JSON.parse(localStorage.getItem('speakup_practice_history_v1') || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function savePracticeHistory(history) {
+      try {
+        localStorage.setItem('speakup_practice_history_v1', JSON.stringify(history));
+      } catch (_) {}
+    }
+
+    function updatePracticeMetrics() {
+      const history = getPracticeHistory();
+      const count = history.length;
+      const el = document.getElementById('metricPracticed');
+      if (el) el.innerText = count;
+      const badge = document.getElementById('historyCountBadge');
+      if (badge) badge.innerText = count;
+      const totalTag = document.getElementById('historyTotalTag');
+      if (totalTag) totalTag.innerText = `${count} sentence${count === 1 ? '' : 's'}`;
+
+      const correctCount = history.filter(h => h.isCorrect).length;
+      const fluencyEl = document.getElementById('metricFluency');
+      if (fluencyEl) {
+        if (count === 0) {
+          fluencyEl.innerText = "92%";
+        } else {
+          const rate = Math.round((correctCount / count) * 100);
+          fluencyEl.innerText = `${rate}%`;
+        }
+      }
+
+      const summaryText = document.getElementById('historySummaryText');
+      if (summaryText) {
+        summaryText.innerText = `Total Practiced: ${count} sentence${count === 1 ? '' : 's'} • ${correctCount} Correct • ${count - correctCount} Polished`;
+      }
+    }
+
+    function recordPracticeSentence(data) {
+      if (!data || data.isDrillPrompt) return;
+      let history = getPracticeHistory();
+      const newEntry = {
+        id: Date.now(),
+        original: data.original,
+        correct: data.correct,
+        native: data.native,
+        isCorrect: !!data.isCorrect,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      };
+      history.unshift(newEntry);
+      if (history.length > 250) history.pop();
+      savePracticeHistory(history);
+      updatePracticeMetrics();
+      if (!document.getElementById('viewHistory').classList.contains('hidden')) {
+        renderHistory(currentHistoryFilter);
+      }
+    }
+
+    function renderHistory(filter) {
+      currentHistoryFilter = filter;
+      const container = document.getElementById('historyList');
+      if (!container) return;
+      const history = getPracticeHistory();
+      let filtered = history;
+      if (filter === 'correct') {
+        filtered = history.filter(h => h.isCorrect);
+      } else if (filter === 'polished') {
+        filtered = history.filter(h => !h.isCorrect);
+      }
+
+      updatePracticeMetrics();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl shadow-inner">
+              📜
+            </div>
+            <h3 class="text-sm font-semibold text-slate-200">No sentences found in this filter</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+              Practice any English sentence by typing or speaking in the Practice Arena. All your practiced sentences will be automatically logged here!
+            </p>
+            <button onclick="switchTab('arena')" class="px-4 py-2 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition font-semibold cursor-pointer shadow-md">
+              Go to Practice Arena →
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const badgeColor = item.isCorrect 
+          ? "bg-emerald-950/90 text-emerald-300 border-emerald-800/60" 
+          : "bg-rose-950/90 text-rose-300 border-rose-800/60";
+        const badgeLabel = item.isCorrect ? "✅ Correct" : "❌ Needs Polish";
+        const escapedOriginal = item.original.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const escapedCorrect = item.correct.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        return `
+          <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800/80 hover:border-indigo-500/40 transition-all space-y-2.5 shadow-md">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="inline-block px-2.5 py-0.5 text-[10px] uppercase font-bold rounded-md ${badgeColor} border">${badgeLabel}</span>
+                <span class="text-[11px] text-slate-500 font-mono">${item.date}</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="testInArena('${escapedOriginal}')" title="Practice again in Arena" class="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span>Practice Again</span>
+                </button>
+                <button onclick="speakText('${escapedCorrect}')" title="Listen" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-300 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                </button>
+                <button onclick="deleteSingleHistory(${item.id})" title="Delete entry" class="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="text-xs sm:text-sm space-y-1.5 pt-1">
+              <div class="text-slate-300"><span class="text-rose-400 font-semibold">✍️ Mine:</span> <span class="font-mono text-slate-200">"${item.original}"</span></div>
+              <div class="text-emerald-300"><span class="font-semibold">✔️ Native:</span> <span>"${item.correct}"</span></div>
+              ${item.native ? `<div class="text-indigo-300 text-xs italic"><span class="font-medium not-italic">🗣️ Casual:</span> "${item.native}"</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterHistory(filter) {
+      document.querySelectorAll('.history-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white', 'font-semibold');
+        btn.classList.add('text-slate-400');
+      });
+      if (event && event.target) {
+        event.target.classList.remove('text-slate-400');
+        event.target.classList.add('bg-indigo-600', 'text-white', 'font-semibold');
+      }
+      renderHistory(filter);
+    }
+
+    function deleteSingleHistory(id) {
+      let history = getPracticeHistory().filter(h => h.id !== id);
+      savePracticeHistory(history);
+      updatePracticeMetrics();
+      renderHistory(currentHistoryFilter);
+      showMiniToast("Practice log removed");
+    }
+
+    function clearAllHistory() {
+      if (!confirm("Are you sure you want to clear your practiced sentence history?")) return;
+      savePracticeHistory([]);
+      updatePracticeMetrics();
+      renderHistory(currentHistoryFilter);
+      showMiniToast("Practice history cleared");
+    }
+
     // PWA Install Prompt Logic
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1262,6 +1464,7 @@
       }
       initSpeechRecognition();
       updateNotesBadge();
+      updatePracticeMetrics();
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg error:', err));
