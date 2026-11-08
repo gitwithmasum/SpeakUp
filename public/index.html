@@ -1,140 +1,877 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070b16">
-  <title>SpeakUp</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeakUp — Ciri AI Real-Time English Simulator</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <meta name="theme-color" content="#4f46e5">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .listening-pulse {
+      animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(140, 140, 160, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(140, 140, 160, 0.5);
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+  </style>
 </head>
-<body>
-  <div class="bg-glow" aria-hidden="true"></div>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen p-3 sm:p-6 font-sans selection:bg-indigo-500 selection:text-white flex flex-col justify-between">
 
-  <header class="topbar">
-    <div class="brand"><span class="logo">◉</span> SpeakUp</div>
-    <div class="streak" id="streakChip" title="Daily streak">🔥 <b id="streakNum">0</b></div>
-  </header>
-
-  <main id="app">
-
-    <!-- SPEAKING -->
-    <section class="view active" id="view-speak">
-      <div class="panel setup">
-        <label>Topic
-          <select id="topicSelect">
-            <option>Daily life</option>
-            <option>Food &amp; cooking</option>
-            <option>Travel</option>
-            <option>Job interview</option>
-            <option>Technology</option>
-            <option>Movies &amp; music</option>
-            <option>Free talk</option>
-          </select>
-        </label>
-        <label>Level
-          <select id="levelSelect">
-            <option>beginner</option>
-            <option selected>intermediate</option>
-            <option>advanced</option>
-          </select>
-        </label>
-        <button class="btn ghost" id="newChat">New chat</button>
-      </div>
-
-      <div class="chat" id="chat" aria-live="polite"></div>
-
-      <div class="composer">
-        <input id="chatInput" type="text" placeholder="Type or tap the mic and speak…" autocomplete="off">
-        <button class="btn" id="sendBtn">Send</button>
-      </div>
-      <div class="mic-wrap">
-        <button class="mic" id="micBtn" aria-label="Start speaking">🎤</button>
-        <div class="mic-hint" id="micHint">Tap to speak</div>
-      </div>
-    </section>
-
-    <!-- WRITING -->
-    <section class="view" id="view-write">
-      <div class="panel">
-        <div class="eyebrow">Writing task</div>
-        <p class="task" id="writePrompt">Loading…</p>
-        <p class="hint" id="writeHint"></p>
-        <textarea id="writeInput" rows="5" placeholder="Write your answer in English…"></textarea>
-        <div class="row">
-          <button class="btn" id="writeCheck">Check my writing</button>
-          <button class="btn ghost" id="writeNew">New task</button>
+  <!-- Main Container -->
+  <div class="max-w-4xl w-full mx-auto relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/90 p-4 sm:p-7 shadow-2xl space-y-6">
+    
+    <!-- Top Header: Infographic Bar & Mode Switcher -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div class="flex items-center gap-3.5">
+        <div class="relative w-12 h-12 shrink-0">
+          <img src="assets/logo.svg" alt="SpeakUp Logo" class="w-12 h-12 rounded-2xl shadow-lg shadow-indigo-500/30 object-cover border border-indigo-500/30" />
+          <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-sm"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold text-white tracking-tight">SpeakUp — Ciri Simulator</h1>
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Live Interactive</span>
+          </div>
+          <p class="text-xs text-slate-400">Native Coach &amp; Real-Time Feedback Simulator for Bangla Speakers</p>
         </div>
       </div>
-      <div id="writeResult"></div>
-    </section>
 
-    <!-- READING -->
-    <section class="view" id="view-read">
-      <div class="panel">
-        <div class="eyebrow">Reading practice</div>
-        <h2 id="readTitle">Loading…</h2>
-        <p class="passage" id="readPassage"></p>
-        <div class="row">
-          <button class="btn ghost" id="readListen">🔊 Listen</button>
-          <button class="btn ghost" id="readNew">New passage</button>
+      <!-- Quick Metrics Tracker -->
+      <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto overflow-x-auto text-xs py-1">
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">Practiced:</span>
+          <span id="metricPracticed" class="font-bold text-emerald-400">0</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800">
+          <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+          <span class="text-slate-400">Native Flow:</span>
+          <span id="metricFluency" class="font-bold text-indigo-400">92%</span>
+        </div>
+        <button id="toggleVoiceBtn" onclick="toggleTtsAutoPlay()" title="Toggle voice autoplay" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <span id="ttsStatusLabel" class="text-xs font-medium">Voice: ON</span>
+        </button>
+        <button id="pwaInstallBtn" onclick="triggerPwaInstall()" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition cursor-pointer" title="Install SpeakUp as an App">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span class="text-xs font-medium">Install App</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center gap-2 border-b border-slate-800 pb-2 text-sm">
+      <button onclick="switchTab('arena')" id="tabArena" class="px-4 py-2 font-medium rounded-xl bg-indigo-600 text-white transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        Practice Arena
+      </button>
+      <button onclick="switchTab('challenges')" id="tabChallenges" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Bangla Drills &amp; Prompts
+        <span class="px-2 py-0.5 text-[10px] bg-pink-500/20 text-pink-300 rounded-full font-bold">15+</span>
+      </button>
+      <button onclick="switchTab('commonMistakes')" id="tabMistakes" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Top Bangla Pitfalls
+      </button>
+    </div>
+
+    <!-- TAB 1: PRACTICE ARENA -->
+    <div id="viewArena" class="space-y-5">
+      
+      <!-- Input Box with Voice Mic & Action Buttons -->
+      <div class="relative bg-slate-950 rounded-2xl border border-slate-800 p-4 focus-within:border-indigo-500 transition-all shadow-inner">
+        <div class="flex items-center justify-between pb-2 text-xs text-slate-400">
+          <span class="flex items-center gap-1.5 font-medium">
+            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Write or Speak your English sentence below:
+          </span>
+          <span id="charCount" class="text-xs text-slate-500 font-mono">0 chars</span>
+        </div>
+
+        <textarea id="userInput" rows="2" placeholder="e.g. 'I am agree with your opinion' or 'Yesterday I have visited my friend'..."
+          class="w-full bg-transparent text-slate-100 placeholder-slate-600 text-sm sm:text-base focus:outline-none resize-none leading-relaxed"></textarea>
+
+        <!-- Control Bar -->
+        <div class="flex items-center justify-between pt-3 border-t border-slate-800 mt-2">
+          <!-- Voice Record Button -->
+          <div class="flex items-center gap-2">
+            <button id="micBtn" onclick="toggleSpeechRecognition()" class="relative flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition cursor-pointer">
+              <span id="micIconHolder">
+                <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+              </span>
+              <span id="micLabel">Speak (Voice Input)</span>
+            </button>
+            <span id="listeningIndicator" class="hidden text-xs text-rose-400 animate-pulse flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Listening to your voice...
+            </span>
+          </div>
+
+          <!-- Quick Actions: Clear & Analyze -->
+          <div class="flex items-center gap-2">
+            <button onclick="clearInput()" class="px-3 py-2 text-xs text-slate-400 hover:text-white transition">Clear</button>
+            <button onclick="runAnalysis()" id="analyzeBtn" class="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs shadow-lg shadow-indigo-600/30 transition cursor-pointer">
+              <span>Analyze Sentence</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </button>
+          </div>
         </div>
       </div>
-      <div id="readQuiz"></div>
-    </section>
 
-    <!-- VOCAB -->
-    <section class="view" id="view-vocab">
-      <div class="panel">
-        <div class="eyebrow">Review</div>
-        <div id="reviewBox" class="review"></div>
+      <!-- Quick Sentence Starters (Chips) -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <span class="text-slate-400 shrink-0 font-medium">Quick Try:</span>
+        <button onclick="loadSample('I am agree with your opinion.')" class="shrink-0 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition">"I am agree..."</button>
+        <button onclick="loadSample('Yesterday I have met with him.')" class="shrink-0 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition">"Yesterday I have met..."</button>
+        <button onclick="loadSample('Can you explain me this topic?')" class="shrink-0 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition">"Explain me this..."</button>
+        <button onclick="loadSample('I did a big mistake in office.')" class="shrink-0 px-3 py-1.5 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition">"I did a mistake..."</button>
       </div>
-      <div class="panel">
-        <div class="eyebrow">Add a word</div>
-        <div class="row">
-          <input id="vWord" type="text" placeholder="Word">
-          <input id="vMeaning" type="text" placeholder="Meaning">
+
+      <!-- FEEDBACK CARD OUTPUT -->
+      <div id="feedbackCard" class="hidden transition-all duration-300 space-y-4">
+        <!-- Verdict Banner -->
+        <div id="verdictBanner" class="p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+          <div class="flex items-center gap-3">
+            <span id="verdictIcon" class="text-2xl">✅</span>
+            <div>
+              <div id="verdictText" class="font-bold text-sm sm:text-base tracking-wide">VERDICT: CORRECT</div>
+              <div id="verdictSub" class="text-xs opacity-90">Great structure and clear expression!</div>
+            </div>
+          </div>
+          <!-- Native Voice Readout Button -->
+          <button id="playAudioBtn" onclick="speakCurrentResult()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-black/30 hover:bg-black/40 backdrop-blur border border-white/10 text-xs font-medium transition cursor-pointer">
+            <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Listen to Ciri (Native Voice)</span>
+          </button>
         </div>
-        <input id="vExample" type="text" placeholder="Example sentence (optional)">
-        <button class="btn" id="vAdd">Save word</button>
-      </div>
-      <div class="panel">
-        <div class="eyebrow">Notebook · <span id="vCount">0</span> words</div>
-        <ul class="vlist" id="vList"></ul>
-      </div>
-    </section>
 
-    <!-- PROGRESS -->
-    <section class="view" id="view-progress">
-      <div class="stats">
-        <div class="stat"><b id="stStreak">0</b><span>Day streak</span></div>
-        <div class="stat"><b id="stAcc">0%</b><span>Accuracy</span></div>
-        <div class="stat"><b id="stMin">0</b><span>Speaking min</span></div>
-        <div class="stat"><b id="stChecks">0</b><span>Checks</span></div>
-      </div>
-      <div class="panel">
-        <div class="eyebrow">Last 7 days (checks)</div>
-        <div class="bars" id="weekBars"></div>
-      </div>
-      <div class="panel">
-        <div class="eyebrow">Common mistakes</div>
-        <div id="mistakeList"></div>
-      </div>
-      <div class="panel">
-        <button class="btn ghost danger" id="resetData">Reset all data</button>
-      </div>
-    </section>
-  </main>
+        <!-- Infographic Breakdown Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Box 1: Sentence Comparison -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-4">
+            <div>
+              <div class="text-[11px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span>✍️ Mine (What you said):</span>
+              </div>
+              <p id="cardOriginal" class="text-sm mt-1.5 text-slate-300 bg-rose-950/20 border border-rose-900/40 rounded-xl p-3 font-mono"></p>
+            </div>
 
-  <div class="toast" id="toast" role="status"></div>
+            <div>
+              <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
+                <span>✔️ Correct (Natural &amp; Accurate):</span>
+                <button onclick="speakText(document.getElementById('cardCorrect').innerText)" title="Listen" class="text-emerald-400 hover:text-emerald-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                </button>
+              </div>
+              <p id="cardCorrect" class="text-sm mt-1.5 text-emerald-300 bg-emerald-950/20 border border-emerald-900/40 rounded-xl p-3 font-semibold"></p>
+            </div>
 
-  <nav class="tabs" id="tabs">
-    <button data-view="speak" class="on">🗣️<span>Speak</span></button>
-    <button data-view="write">✍️<span>Write</span></button>
-    <button data-view="read">📖<span>Read</span></button>
-    <button data-view="vocab">📚<span>Vocab</span></button>
-    <button data-view="progress">📈<span>Progress</span></button>
-  </nav>
+            <!-- Say it like a native -->
+            <div>
+              <div class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center justify-between">
+                <span>🗣️ Say it like a native (Casual / Idiomatic):</span>
+                <button onclick="speakText(document.getElementById('cardNative').innerText)" title="Listen" class="text-indigo-400 hover:text-indigo-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                </button>
+              </div>
+              <p id="cardNative" class="text-sm mt-1.5 text-indigo-200 bg-indigo-950/20 border border-indigo-900/40 rounded-xl p-3 italic"></p>
+            </div>
+          </div>
 
-  <script src="js/app.js"></script>
+          <!-- Box 2: Why in Bangla + Vocab & Pronunciation -->
+          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-4">
+            
+            <!-- Bangla Explanation -->
+            <div>
+              <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                <span>💡 Why (ভুলের মূল কারণ ও সহজ ব্যাখ্যা):</span>
+              </div>
+              <div id="cardWhy" class="text-xs sm:text-sm mt-1.5 text-amber-200/90 bg-amber-950/20 border border-amber-900/40 rounded-xl p-3 leading-relaxed"></div>
+            </div>
+
+            <!-- Vocabulary Booster -->
+            <div>
+              <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+                <span>📚 Vocab Booster (Related Power Words):</span>
+              </div>
+              <div id="cardVocab" class="text-xs mt-1.5 space-y-2 text-slate-300 bg-slate-900/50 border border-slate-800 rounded-xl p-3"></div>
+            </div>
+
+            <!-- Pronunciation Tip -->
+            <div>
+              <div class="text-[11px] font-bold text-pink-400 uppercase tracking-wider flex items-center justify-between">
+                <span>🎯 Pronunciation Tip:</span>
+                <span id="pronunciationAudioTrigger" class="cursor-pointer text-pink-400 hover:text-pink-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                </span>
+              </div>
+              <div id="cardPronunciation" class="text-xs mt-1.5 text-pink-200/90 bg-pink-950/20 border border-pink-900/40 rounded-xl p-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Step Prompt for Continuous Practice -->
+        <div class="rounded-2xl bg-gradient-to-r from-purple-900/30 to-indigo-900/30 border border-indigo-500/20 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 text-sm">🎯</span>
+            <span class="text-slate-200"><strong>Next Challenge:</strong> Try speaking the corrected sentence into the mic to test your accent!</span>
+          </div>
+          <button onclick="switchTab('challenges')" class="shrink-0 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition cursor-pointer">Explore Bangla Drills →</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: BANGLA CHALLENGES & DRILLS -->
+    <div id="viewChallenges" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-white">Translate into Natural English (বাংলা থেকে ইংরেজি অনুশীলন)</h2>
+          <p class="text-xs text-slate-400">Click on any challenge to load it into the Practice Arena or practice right here!</p>
+        </div>
+        <div class="flex gap-1.5">
+          <button onclick="filterCategory('all')" class="category-btn active px-3 py-1.5 text-xs rounded-lg bg-indigo-600 text-white font-medium">All</button>
+          <button onclick="filterCategory('work')" class="category-btn px-3 py-1.5 text-xs rounded-lg bg-slate-800 text-slate-300 hover:text-white font-medium">Workplace</button>
+          <button onclick="filterCategory('daily')" class="category-btn px-3 py-1.5 text-xs rounded-lg bg-slate-800 text-slate-300 hover:text-white font-medium">Daily Life</button>
+          <button onclick="filterCategory('idioms')" class="category-btn px-3 py-1.5 text-xs rounded-lg bg-slate-800 text-slate-300 hover:text-white font-medium">Idioms</button>
+        </div>
+      </div>
+
+      <!-- Challenge Cards List -->
+      <div id="challengesList" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 3: COMMON BANGLA PITFALLS REFERENCE -->
+    <div id="viewCommonMistakes" class="hidden space-y-4">
+      <div class="border-b border-slate-800 pb-3">
+        <h2 class="text-base font-bold text-white">Top Bangla Speaker Habits &amp; Solutions</h2>
+        <p class="text-xs text-slate-400">বাঙালি স্পিকারদের সবচেয়ে সাধারণ ভুলগুলো এক নজরে বুঝে নিন:</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs max-h-[460px] overflow-y-auto pr-1">
+        <div class="p-4 rounded-2xl bg-slate-950 border border-rose-900/30 space-y-2">
+          <div class="font-bold text-rose-400">❌ "I am agree with you"</div>
+          <div class="font-bold text-emerald-400">✔️ "I agree with you"</div>
+          <p class="text-slate-400 text-xs leading-relaxed">কারণ: Agree নিজেই একটি Verb, এর সাথে 'am' যোগ করার প্রয়োজন নেই।</p>
+          <button onclick="testInArena('I am agree with you')" class="text-indigo-400 hover:underline text-xs pt-1 font-medium">Try in Arena →</button>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-rose-900/30 space-y-2">
+          <div class="font-bold text-rose-400">❌ "I gave exam yesterday"</div>
+          <div class="font-bold text-emerald-400">✔️ "I took the exam yesterday"</div>
+          <p class="text-slate-400 text-xs leading-relaxed">কারণ: ছাত্র হিসেবে পরীক্ষা দেওয়াকে ইংরেজিতে 'Take/Sit for an exam' বলা হয়, শিক্ষক পরীক্ষা নেন।</p>
+          <button onclick="testInArena('I gave exam yesterday')" class="text-indigo-400 hover:underline text-xs pt-1 font-medium">Try in Arena →</button>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-rose-900/30 space-y-2">
+          <div class="font-bold text-rose-400">❌ "Can you explain me this?"</div>
+          <div class="font-bold text-emerald-400">✔️ "Can you explain this to me?"</div>
+          <p class="text-slate-400 text-xs leading-relaxed">কারণ: Explain-এর পর সরাসরি বিষয়বস্তু বসে এবং যার কাছে ব্যাখ্যা করা হয় তার আগে 'to' বসে।</p>
+          <button onclick="testInArena('Can you explain me this?')" class="text-indigo-400 hover:underline text-xs pt-1 font-medium">Try in Arena →</button>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-rose-900/30 space-y-2">
+          <div class="font-bold text-rose-400">❌ "I am living here since 5 years"</div>
+          <div class="font-bold text-emerald-400">✔️ "I have been living here for 5 years"</div>
+          <p class="text-slate-400 text-xs leading-relaxed">কারণ: সময়কাল (duration) বুঝাতে 'for' বসে এবং অতীত থেকে এখন পর্যন্ত চললে Present Perfect Continuous হয়।</p>
+          <button onclick="testInArena('I am living here since 5 years')" class="text-indigo-400 hover:underline text-xs pt-1 font-medium">Try in Arena →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Coach Tip & Audio Status -->
+    <div class="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+        <span class="font-medium text-slate-300">Ciri AI Coach is active &amp; ready</span>
+      </div>
+      <div class="text-xs text-slate-500">
+        SpeakUp Studio • Practice Daily for 10 Minutes
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State variables
+    let autoPlayVoice = true;
+    let practicedCount = 0;
+    let recognition = null;
+    let isListening = false;
+
+    // Database of Curated Bangla Practice Challenges
+    const challengesData = [
+      {
+        id: 1,
+        cat: 'work',
+        bangla: 'আমি ট্রাফিকে আটকা পড়ে গিয়েছিলাম তাই সামান্য দেরি হয়ে গেল।',
+        natural: "I got stuck in traffic, so I'm running a little late.",
+        casual: "Got caught in a jam; be there in a sec!",
+        why: "ট্রাফিকের জন্য আটকা পড়লে 'stuck in traffic' সবচেয়ে স্বাভাবিক এক্সপ্রেশন।",
+        vocab: "Stuck in traffic (জ্যামে আটকে পড়া), Running late (দেরি হওয়া)",
+        pronunciation: "Traffic: /ˈtræf.ɪk/ (ট্রেফ-ইক, 'ট্রা' নয়)"
+      },
+      {
+        id: 2,
+        cat: 'work',
+        bangla: 'আমার মনে হয় এই বিষয়ে আমাদের আরেকটু বিস্তারিত কথা বলা দরকার।',
+        natural: "I think we need to look into this in a bit more detail.",
+        casual: "Let's dig a little deeper into this.",
+        why: "বিস্তারিত খতিয়ে দেখা অর্থে 'look into' অথবা 'dive into' অত্যন্ত প্রফেশনাল ফ্রেজ।",
+        vocab: "Look into (খতিয়ে দেখা), In detail (বিস্তারিতভাবে)",
+        pronunciation: "Detail: /ˈdiː.teɪl/ (ডি-টেইল)"
+      },
+      {
+        id: 3,
+        cat: 'work',
+        bangla: 'তুমি কি কালকের মিটিংয়ের আপডেটগুলো আমাকে একটু সংক্ষেপে জানাতে পারবে?',
+        natural: "Could you brief me on yesterday's meeting updates?",
+        casual: "Could you catch me up on yesterday's meeting?",
+        why: "'Brief me' বা 'catch me up' প্রফেশনাল জগতে সংক্ষেপে আপডেট জানার আদর্শ ফ্রেজ।",
+        vocab: "Brief someone (সংক্ষেপে তথ্য দেওয়া), Catch up (হালনাগাদ হওয়া)",
+        pronunciation: "Brief: /briːf/ (লং ই সাউন্ড)"
+      },
+      {
+        id: 4,
+        cat: 'daily',
+        bangla: 'অনেক দিন পর তোমার সাথে কথা বলে ভীষণ ভালো লাগলো!',
+        natural: "It was so wonderful catching up with you after such a long time!",
+        casual: "So great catching up with you!",
+        why: "পুরনো বন্ধুর সাথে অনেক দিন পর কথা হওয়া বা দেখা হওয়াকে 'catch up' বলা হয়।",
+        vocab: "Catch up (পুরনো কারও সাথে কুশল বিনিময় করা), Wonderful (দারুণ)",
+        pronunciation: "Wonderful: /ˈwʌn.dɚ.fəl/ (ওয়ান-ডার-ফুল)"
+      },
+      {
+        id: 5,
+        cat: 'daily',
+        bangla: 'আমার খুব একটা খিদে নেই, আমি হালকা কিছু একটা খেয়ে নিব।',
+        natural: "I don't have much of an appetite, so I'll just grab a light bite.",
+        casual: "I'm not that hungry; I'll just grab a quick snack.",
+        why: "খিদে না থাকাকে 'don't have much of an appetite' এবং হালকা খাওয়াকে 'grab a bite' বলে।",
+        vocab: "Appetite (ক্ষুধা/খাবারের রুচি), Grab a bite (দ্রুত হালকা কিছু খাওয়া)",
+        pronunciation: "Appetite: /ˈæp.ə.taɪt/ (অ্যাপ-ই-টাইট)"
+      },
+      {
+        id: 6,
+        cat: 'daily',
+        bangla: 'আজকে আবহাওয়াটা অসাধারণ, চল একটু বাইরে ঘুরে আসি।',
+        natural: "The weather is gorgeous today; let's head out for a bit.",
+        casual: "Gorgeous day out! Let's take a stroll.",
+        why: "বাইরে বের হওয়াকে নেটিভ স্পিকাররা সাধারণত 'head out' বলে থাকেন।",
+        vocab: "Gorgeous (অসাধারণ/খুবই সুন্দর), Head out (বাইরে যাওয়া)",
+        pronunciation: "Gorgeous: /ˈɡɔːr.dʒəs/ (গোর-জাস)"
+      },
+      {
+        id: 7,
+        cat: 'idioms',
+        bangla: 'দেরি না করে সরাসরি আসল কথায় আসি।',
+        natural: "Without further ado, let's cut to the chase.",
+        casual: "Let's cut right to the chase.",
+        why: "'Cut to the chase' একটি অতি প্রচলিত নেটিভ ইডিয়ম যার অর্থ ভূমিকা বাদ দিয়ে মূল কথায় আসা।",
+        vocab: "Cut to the chase (আসল কথায় আসা), Without further ado (বিনা বিলম্বে)",
+        pronunciation: "Chase: /tʃeɪs/ (চেইস)"
+      },
+      {
+        id: 8,
+        cat: 'idioms',
+        bangla: 'কথাটা আমার মনের ভেতর খচখচ করছে / অস্বস্তি দিচ্ছে।',
+        natural: "Something about that is really bothering me.",
+        casual: "It's been bugging me all day.",
+        why: "মনের ভেতর কোনো চিন্তা খচখচ করা বা বিরক্ত করার নেটিভ রূপ 'it's bugging me' বা 'bothering me'!",
+        vocab: "Bugging (বিরক্ত বা অস্বস্তি তৈরি করা), Bothering (চিন্তিত করা)",
+        pronunciation: "Bother: /ˈbɑː.ðɚ/ (বা-দার)"
+      }
+    ];
+
+    // Common Bangla-English pattern rules engine
+    const correctionRules = [
+      {
+        regex: /\b(i am agree|i'm agree)\b/i,
+        correct: "I agree with you.",
+        native: "I totally agree / I'm completely on board.",
+        why: "'Agree' নিজেই একটি Verb (ক্রিয়া)। তাই 'am agree' হবে না, সরাসরি 'I agree' হবে।",
+        vocab: "On board (সম্মত বা একমত), Concur (আনুষ্ঠানিকভাবে একমত হওয়া)",
+        pronunciation: "Agree: /əˈɡriː/ ('অ্যা-গ্রী', 'এগ্রি' নয়)"
+      },
+      {
+        regex: /\b(gave exam|give exam|giving exam|give the exam)\b/i,
+        correct: "I took the exam / I am taking the exam.",
+        native: "I sat for the exam / I took my finals today.",
+        why: "বাংলায় 'পরীক্ষা দেওয়া' বললেও ইংরেজিতে শিক্ষার্থী হলে 'take / sit for an exam' হয়। শিক্ষক হলে 'give/administer an exam' হয়।",
+        vocab: "Sit for an exam (পরীক্ষায় বসা), Ace an exam (পরীক্ষায় চমৎকার ফলাফল করা)",
+        pronunciation: "Exam: /ɪɡˈzæm/ (ইগ-জ্যাম, 'একজাম' নয়)"
+      },
+      {
+        regex: /\b(discuss about)\b/i,
+        correct: "We need to discuss this topic.",
+        native: "Let's talk through this matter.",
+        why: "'Discuss' এর পর কখনো 'about' বসে না। সরাসরি object বসে (e.g. Discuss the issue).",
+        vocab: "Deliberate (গভীরভাবে আলোচনা করা), Talk through (বিস্তারিত আলোচনা করা)",
+        pronunciation: "Discuss: /dɪˈskʌs/ (ডিস-কাস)"
+      },
+      {
+        regex: /\b(explain me)\b/i,
+        correct: "Can you explain this to me?",
+        native: "Could you walk me through this?",
+        why: "'Explain' এর পর সরাসরি ব্যক্তি বসে না; আগে বিষয়বস্তু এবং পরে 'to [person]' বসে।",
+        vocab: "Walk through (ধাপে ধাপে বুঝিয়ে দেওয়া), Clarify (স্পষ্ট করা)",
+        pronunciation: "Explain: /ɪkˈspleɪn/ (ইক্স-প্লেইন)"
+      },
+      {
+        regex: /\b(did a mistake|do a mistake|did mistake)\b/i,
+        correct: "I made a mistake.",
+        native: "I messed up / I made an error.",
+        why: "ভুলের ক্ষেত্রে ইংরেজি কোলোকেশন হলো 'Make a mistake', 'Do a mistake' নয়।",
+        vocab: "Slip-up (ছোট ভুল), Mess up (ভুল করে ফেলা / এলোমেলো করা)",
+        pronunciation: "Mistake: /mɪˈsteɪk/ (মিস-টেইক)"
+      },
+      {
+        regex: /\b(yesterday i have|i have .* yesterday)\b/i,
+        correct: "I visited / met him yesterday.",
+        native: "I caught up with him yesterday.",
+        why: "নির্দিষ্ট অতীত সময় (যেমন yesterday, last night, 2 days ago) উল্লেখ থাকলে Present Perfect (have + v3) হয় না, Simple Past হয়।",
+        vocab: "Previously (পূর্বে), The other day (কয়েক দিন আগে)",
+        pronunciation: "Yesterday: /ˈjes.tɚ.deɪ/ (ইয়েস-টার-ডেই)"
+      },
+      {
+        regex: /\b(myself [a-z]+)\b/i,
+        correct: "I am / My name is...",
+        native: "Hi, I'm...",
+        why: "নিজের পরিচয় দেওয়ার সময় 'Myself [নাম]' ব্যাকরণগতভাবে ভুল। সবসময় 'I am' বা 'My name is' বলুন।",
+        vocab: "Introduce (পরিচয় করিয়ে দেওয়া), Acquaint (পরিচিত হওয়া)",
+        pronunciation: "Name: /neɪm/ (নেইম)"
+      },
+      {
+        regex: /\b(since \d+ (years|months|days|hours))\b/i,
+        correct: "I have been here for ...",
+        native: "I've been living here for...",
+        why: "সময়ের নির্দিষ্ট পরিধি বা ব্যাপ্তি (duration) বোঝাতে 'for' বসে। শুরুর বিন্দু (starting point) বোঝালে 'since' বসে।",
+        vocab: "Duration (সময়কাল), Inception (শুরু)",
+        pronunciation: "Since: /sɪns/ (সিন্স)"
+      },
+      {
+        regex: /\b(return back|reply back|repeat again)\b/i,
+        correct: "Return / Reply / Repeat.",
+        native: "Get back to someone / Follow up.",
+        why: "Return বা Reply-র ভেতরেই 'back' লুকিয়ে আছে, তাই সাথে আবার 'back' বা 'again' যোগ করা রিডানড্যান্ট (Redundant/অতিরিক্ত)।",
+        vocab: "Redundant (অপ্রয়োজনীয় বাড়তি শব্দ), Follow up (যোগাযোগ বজায় রাখা)",
+        pronunciation: "Reply: /rɪˈplaɪ/ (রি-প্লাই)"
+      }
+    ];
+
+    // Initialize Web Speech Recognition
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          isListening = true;
+          document.getElementById('listeningIndicator').classList.remove('hidden');
+          document.getElementById('micLabel').innerText = "Listening...";
+          document.getElementById('micBtn').classList.add('bg-rose-900/50', 'border-rose-500');
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          const inputEl = document.getElementById('userInput');
+          inputEl.value = transcript;
+          updateCharCount();
+          runAnalysis();
+        };
+
+        recognition.onerror = (event) => {
+          console.warn("Speech recognition error:", event.error);
+          stopListening();
+        };
+
+        recognition.onend = () => {
+          stopListening();
+        };
+      } else {
+        const micBtn = document.getElementById('micBtn');
+        if (micBtn) {
+          micBtn.title = "Voice recognition not supported in this browser.";
+          micBtn.classList.add('opacity-50');
+        }
+      }
+    }
+
+    function toggleSpeechRecognition() {
+      if (!recognition) {
+        initSpeechRecognition();
+      }
+      if (!recognition) {
+        alert("Speech recognition is not available in this browser. You can type directly!");
+        return;
+      }
+      if (isListening) {
+        recognition.stop();
+        stopListening();
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    function stopListening() {
+      isListening = false;
+      document.getElementById('listeningIndicator').classList.add('hidden');
+      document.getElementById('micLabel').innerText = "Speak (Voice Input)";
+      document.getElementById('micBtn').classList.remove('bg-rose-900/50', 'border-rose-500');
+    }
+
+    // Text to Speech Engine
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Jenny')) && v.lang.startsWith('en'))
+                            || voices.find(v => v.lang.startsWith('en'));
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCurrentResult() {
+      const correctText = document.getElementById('cardCorrect').innerText;
+      if (correctText) {
+        speakText(correctText);
+      }
+    }
+
+    function toggleTtsAutoPlay() {
+      autoPlayVoice = !autoPlayVoice;
+      const label = document.getElementById('ttsStatusLabel');
+      label.innerText = autoPlayVoice ? "Voice: ON" : "Voice: OFF";
+      const btn = document.getElementById('toggleVoiceBtn');
+      if (autoPlayVoice) {
+        btn.classList.add('bg-indigo-600/20', 'text-indigo-300');
+        btn.classList.remove('bg-slate-800', 'text-slate-400');
+      } else {
+        btn.classList.remove('bg-indigo-600/20', 'text-indigo-300');
+        btn.classList.add('bg-slate-800', 'text-slate-400');
+      }
+    }
+
+    // Input handlers
+    const userInput = document.getElementById('userInput');
+    userInput.addEventListener('input', updateCharCount);
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        runAnalysis();
+      }
+    });
+
+    function updateCharCount() {
+      const len = document.getElementById('userInput').value.length;
+      document.getElementById('charCount').innerText = `${len} chars`;
+    }
+
+    function clearInput() {
+      document.getElementById('userInput').value = '';
+      updateCharCount();
+      document.getElementById('feedbackCard').classList.add('hidden');
+    }
+
+    function loadSample(text) {
+      document.getElementById('userInput').value = text;
+      updateCharCount();
+      runAnalysis();
+    }
+
+    function testInArena(text) {
+      switchTab('arena');
+      loadSample(text);
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.getElementById('viewArena').classList.add('hidden');
+      document.getElementById('viewChallenges').classList.add('hidden');
+      document.getElementById('viewCommonMistakes').classList.add('hidden');
+
+      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(t);
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('text-slate-400');
+      });
+
+      if (tabId === 'arena') {
+        document.getElementById('viewArena').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabArena');
+        activeBtn.classList.add('bg-indigo-600', 'text-white');
+        activeBtn.classList.remove('text-slate-400');
+      } else if (tabId === 'challenges') {
+        document.getElementById('viewChallenges').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabChallenges');
+        activeBtn.classList.add('bg-indigo-600', 'text-white');
+        activeBtn.classList.remove('text-slate-400');
+        renderChallenges('all');
+      } else if (tabId === 'commonMistakes') {
+        document.getElementById('viewCommonMistakes').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabMistakes');
+        activeBtn.classList.add('bg-indigo-600', 'text-white');
+        activeBtn.classList.remove('text-slate-400');
+      }
+    }
+
+    // Render Bangla Challenges
+    function renderChallenges(filter) {
+      const container = document.getElementById('challengesList');
+      container.innerHTML = '';
+
+      const filtered = filter === 'all' ? challengesData : challengesData.filter(c => c.cat === filter);
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-indigo-500/50 transition space-y-2.5";
+        div.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-block px-2.5 py-0.5 text-[10px] uppercase font-bold rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/60 mb-1.5">${item.cat}</span>
+              <p class="text-sm font-semibold text-slate-100">${item.bangla}</p>
+            </div>
+            <button onclick="testChallenge(${item.id})" class="shrink-0 px-3 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition font-medium cursor-pointer">
+              Try in Arena
+            </button>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span class="text-emerald-400 font-medium">✔️ ${item.natural}</span>
+            <button onclick="speakText('${item.natural.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-emerald-400 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+              <span>Listen</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+      });
+      event.target.classList.remove('bg-slate-800', 'text-slate-300');
+      event.target.classList.add('bg-indigo-600', 'text-white');
+      renderChallenges(cat);
+    }
+
+    function testChallenge(id) {
+      const challenge = challengesData.find(c => c.id === id);
+      if (!challenge) return;
+      switchTab('arena');
+      const input = document.getElementById('userInput');
+      input.value = "";
+      input.placeholder = `How would you say in English: "${challenge.bangla}"?`;
+      input.focus();
+      displayFeedback({
+        isCorrect: false,
+        isDrillPrompt: true,
+        original: `Prompt: ${challenge.bangla}`,
+        correct: challenge.natural,
+        native: challenge.casual,
+        why: challenge.why,
+        vocab: challenge.vocab,
+        pronunciation: challenge.pronunciation
+      });
+    }
+
+    // MAIN ANALYSIS LOGIC
+    function runAnalysis() {
+      const rawText = document.getElementById('userInput').value.trim();
+      if (!rawText) return;
+
+      practicedCount++;
+      document.getElementById('metricPracticed').innerText = practicedCount;
+
+      let matchedRule = null;
+      for (const rule of correctionRules) {
+        if (rule.regex.test(rawText)) {
+          matchedRule = rule;
+          break;
+        }
+      }
+
+      if (matchedRule) {
+        displayFeedback({
+          isCorrect: false,
+          original: rawText,
+          correct: matchedRule.correct,
+          native: matchedRule.native,
+          why: matchedRule.why,
+          vocab: matchedRule.vocab,
+          pronunciation: matchedRule.pronunciation
+        });
+      } else {
+        evaluateDynamicSentence(rawText);
+      }
+    }
+
+    function evaluateDynamicSentence(text) {
+      let formatted = text.charAt(0).toUpperCase() + text.slice(1);
+      if (!/[.!?]$/.test(formatted)) {
+        formatted += '.';
+      }
+
+      let isMistake = false;
+      let why = "Sentence structure is grammatically sound!";
+      let nativeOpt = formatted;
+      let vocab = "Articulate (স্পষ্টভাবে প্রকাশ করা), Fluency (সাবলীলতা)";
+      let pron = "Focus on linking words smoothly without abrupt pauses.";
+
+      if (/very tired/i.test(formatted)) {
+        isMistake = true;
+        formatted = formatted.replace(/very tired/gi, "exhausted");
+        nativeOpt = "I'm completely wiped out / exhausted.";
+        why = "'Very tired' এর পরিবর্তে নেটিভ স্পিকাররা 'exhausted' বা 'wiped out' ব্যবহার করেন।";
+        vocab = "Exhausted (অত্যন্ত ক্লান্ত), Wiped out (ক্লান্তিতে ভেঙে পড়া)";
+        pron = "Exhausted: /ɪɡˈzɑː.stɪd/ (ইগ-জস-টিড)";
+      } else if (/very happy/i.test(formatted)) {
+        isMistake = true;
+        formatted = formatted.replace(/very happy/gi, "thrilled");
+        nativeOpt = "I'm over the moon / absolutely thrilled!";
+        why = "অতি আনন্দের ক্ষেত্রে 'very happy'-র বদলে 'thrilled' বা 'over the moon' অনেক বেশি প্রাণবন্ত।";
+        vocab = "Thrilled (রোমাঞ্চিত ও আনন্দিত), Over the moon (খুবই খুশি)";
+        pron = "Thrilled: /θrɪld/ (থ্রিল্ড)";
+      } else if (/i think that/i.test(formatted)) {
+        nativeOpt = formatted.replace(/i think that/gi, "In my view / As I see it");
+        why = "বাক্যটি ব্যাকরণগতভাবে সঠিক! আরও প্রফেশনাল শোনাতে 'In my view' বা 'From my perspective' ব্যবহার করা যায়।";
+      }
+
+      displayFeedback({
+        isCorrect: !isMistake,
+        original: text,
+        correct: formatted,
+        native: nativeOpt,
+        why: why,
+        vocab: vocab,
+        pronunciation: pron
+      });
+    }
+
+    function displayFeedback(data) {
+      const card = document.getElementById('feedbackCard');
+      card.classList.remove('hidden');
+
+      const banner = document.getElementById('verdictBanner');
+      const icon = document.getElementById('verdictIcon');
+      const text = document.getElementById('verdictText');
+      const sub = document.getElementById('verdictSub');
+
+      if (data.isDrillPrompt) {
+        banner.className = "p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-indigo-950/40 border-indigo-500/40 text-indigo-200";
+        icon.innerText = "🎯";
+        text.innerText = "CHALLENGE TARGET & HINT";
+        sub.innerText = "Here is how a native English speaker phrases this thought:";
+      } else if (data.isCorrect) {
+        banner.className = "p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-emerald-950/40 border-emerald-500/40 text-emerald-200";
+        icon.innerText = "✅";
+        text.innerText = "VERDICT: CORRECT & NATURAL";
+        sub.innerText = "Great job! Your sentence is grammatically clean and well-structured.";
+      } else {
+        banner.className = "p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-rose-950/40 border-rose-500/40 text-rose-200";
+        icon.innerText = "❌";
+        text.innerText = "VERDICT: NEEDS POLISH / MISTAKE FOUND";
+        sub.innerText = "Let's fix the structure and learn the natural native habit!";
+      }
+
+      document.getElementById('cardOriginal').innerText = data.original;
+      document.getElementById('cardCorrect').innerText = data.correct;
+      document.getElementById('cardNative').innerText = data.native;
+      document.getElementById('cardWhy').innerHTML = data.why;
+      document.getElementById('cardVocab').innerHTML = data.vocab.split(',').map(v => `<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span>${v.trim()}</span></div>`).join('');
+      document.getElementById('cardPronunciation').innerText = data.pronunciation;
+
+      const audioTrigger = document.getElementById('pronunciationAudioTrigger');
+      audioTrigger.onclick = () => speakText(data.pronunciation.split(':')[0] || data.correct);
+
+      if (autoPlayVoice && !data.isDrillPrompt) {
+        setTimeout(() => {
+          speakText(data.correct);
+        }, 300);
+      }
+
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // PWA Install Prompt Logic
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('pwaInstallBtn').classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert("To install SpeakUp on desktop or phone:\n• In Chrome/Edge: Click the 'Install SpeakUp' icon in your browser URL bar or browser menu (⋮) -> 'Install SpeakUp' or 'Add to Home screen'.");
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
+      }
+      initSpeechRecognition();
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg error:', err));
+      }
+    });
+  </script>
 </body>
 </html>

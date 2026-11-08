@@ -21,7 +21,7 @@ const path = require('path');
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = __dirname;
 const MAX_BODY = 100 * 1024;
 
 const MIME = {

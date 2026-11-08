@@ -1,0 +1,17 @@
+{
+  "name": "SpeakUp — AI English Coach",
+  "short_name": "SpeakUp",
+  "description": "Learn English like a native, built for Bangla speakers with real-time feedback.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
