@@ -93,6 +93,16 @@
 
       <!-- Quick Metrics Tracker (Segmented Glass Toolbar) -->
       <div class="flex items-center gap-2 flex-wrap text-xs">
+        <!-- Daily Streak & Goal Indicator -->
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/90 border border-amber-500/30 text-xs shadow-inner" title="Daily Speaking Streak & Goal (প্রতিদিনের প্র্যাকটিস স্ট্রিক)">
+          <span class="text-amber-400 font-bold animate-pulse text-sm">🔥</span>
+          <span class="text-slate-400">Streak:</span>
+          <span id="streakCountDisplay" class="font-bold text-amber-400 font-mono">1d</span>
+          <span class="text-slate-700">|</span>
+          <span class="text-slate-400">Goal:</span>
+          <span id="streakGoalDisplay" class="font-bold text-emerald-400 font-mono">0/5</span>
+        </div>
+
         <button onclick="switchTab('history')" title="View Practice History (কতগুলো বাক্য প্র্যাকটিস করেছ)" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/90 hover:bg-slate-900 border border-slate-800/80 hover:border-emerald-500/50 shadow-inner transition cursor-pointer">
           <span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition"></span>
           <span class="text-slate-400 group-hover:text-slate-200 transition">Practiced:</span>
@@ -119,6 +129,11 @@
       <button onclick="switchTab('arena')" id="tabArena" class="px-4 py-2 font-semibold rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
         Practice Arena
+      </button>
+      <button onclick="switchTab('roleplay')" id="tabRoleplay" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        🎭 AI Roleplay
+        <span class="px-2 py-0.5 text-[10px] bg-purple-500/20 text-purple-300 rounded-full font-bold">Live</span>
       </button>
       <button onclick="switchTab('challenges')" id="tabChallenges" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -439,6 +454,80 @@
       <!-- History Cards List -->
       <div id="historyList" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
         <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 6: AI ROLEPLAY CONVERSATIONS -->
+    <div id="viewRoleplay" class="hidden space-y-4">
+      <!-- Roleplay Scenario Selection View -->
+      <div id="roleplaySelectorView" class="space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span>🎭 AI Roleplay Conversations (বাস্তব জীবনের কথোপকথন)</span>
+              <span class="px-2.5 py-0.5 text-xs bg-purple-500/20 text-purple-300 rounded-full font-bold">5 Scenarios</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Practice speaking naturally with Ciri in simulated real-life situations with instant coaching feedback.</p>
+          </div>
+        </div>
+
+        <!-- Scenarios Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5" id="roleplayScenariosGrid">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Active Roleplay Arena View (Hidden initially) -->
+      <div id="roleplayActiveArena" class="hidden space-y-3">
+        <!-- Top Control Bar -->
+        <div class="p-3.5 rounded-2xl bg-slate-950/90 border border-slate-800 flex items-center justify-between gap-3 shadow-md">
+          <div class="flex items-center gap-3">
+            <button onclick="exitRoleplay()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border border-slate-700">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              <span>Back to Scenarios</span>
+            </button>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="roleplayActiveIcon" class="text-lg">💼</span>
+                <span id="roleplayActiveTitle" class="text-sm font-bold text-white">Job Interview</span>
+                <span id="roleplayTurnIndicator" class="px-2 py-0.5 text-[10px] bg-purple-950 text-purple-300 border border-purple-800/60 rounded-full font-semibold">Turn 1 of 4</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="restartCurrentRoleplay()" title="Restart Conversation" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer border border-slate-800">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </button>
+        </div>
+
+        <!-- Roleplay Messages Scroll Box -->
+        <div id="roleplayMessages" class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 min-h-[280px] max-h-[380px] overflow-y-auto space-y-3.5 shadow-inner">
+          <!-- Chat bubbles injected via JS -->
+        </div>
+
+        <!-- Quick Response Suggestion Chips -->
+        <div class="space-y-1.5">
+          <div class="text-[11px] text-slate-400 flex items-center gap-1.5 font-medium">
+            <span>💡 Suggested ways to reply (Click to use):</span>
+          </div>
+          <div id="roleplayQuickChips" class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            <!-- Chips injected via JS -->
+          </div>
+        </div>
+
+        <!-- User Input Area -->
+        <div class="p-3 rounded-2xl bg-slate-950/90 border border-slate-800/90 space-y-2 shadow-lg">
+          <div class="flex items-center gap-2">
+            <button id="roleplayMicBtn" onclick="toggleRoleplaySpeechRecognition()" class="shrink-0 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+              <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+              <span id="roleplayMicLabel">Speak</span>
+            </button>
+            <input type="text" id="roleplayInput" placeholder="Speak into mic or type your reply..." class="w-full bg-slate-900/90 border border-slate-800 text-white rounded-xl px-3.5 py-2 text-xs sm:text-sm focus:outline-none focus:border-purple-500/80 transition" onkeydown="if(event.key==='Enter') sendRoleplayUserReply()" />
+            <button onclick="sendRoleplayUserReply()" class="shrink-0 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center gap-1 shadow-md shadow-purple-600/30">
+              <span>Send</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -802,12 +891,13 @@
     let currentHistoryFilter = 'all';
     function switchTab(tabId) {
       document.getElementById('viewArena').classList.add('hidden');
+      document.getElementById('viewRoleplay').classList.add('hidden');
       document.getElementById('viewChallenges').classList.add('hidden');
       document.getElementById('viewCommonMistakes').classList.add('hidden');
       document.getElementById('viewNotes').classList.add('hidden');
       document.getElementById('viewHistory').classList.add('hidden');
 
-      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes', 'tabNotes', 'tabHistory'];
+      const tabs = ['tabArena', 'tabRoleplay', 'tabChallenges', 'tabMistakes', 'tabNotes', 'tabHistory'];
       tabs.forEach(t => {
         const btn = document.getElementById(t);
         if (btn) {
@@ -821,6 +911,12 @@
         const activeBtn = document.getElementById('tabArena');
         activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
         activeBtn.classList.remove('text-slate-400');
+      } else if (tabId === 'roleplay') {
+        document.getElementById('viewRoleplay').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabRoleplay');
+        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+        activeBtn.classList.remove('text-slate-400');
+        renderRoleplayScenarios();
       } else if (tabId === 'challenges') {
         document.getElementById('viewChallenges').classList.remove('hidden');
         const activeBtn = document.getElementById('tabChallenges');
@@ -1329,6 +1425,7 @@
       if (history.length > 250) history.pop();
       savePracticeHistory(history);
       updatePracticeMetrics();
+      recordStreakPractice();
       if (!document.getElementById('viewHistory').classList.contains('hidden')) {
         renderHistory(currentHistoryFilter);
       }
@@ -1433,6 +1530,528 @@
       showMiniToast("Practice history cleared");
     }
 
+    // ==========================================
+    // 1. DAILY STREAK & GOAL SYSTEM
+    // ==========================================
+    function getStreakData() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      try {
+        const stored = JSON.parse(localStorage.getItem('speakup_streak_data_v1'));
+        if (stored) {
+          if (stored.lastDate === todayStr) {
+            return stored;
+          }
+          const last = new Date(stored.lastDate);
+          const today = new Date(todayStr);
+          const diffDays = Math.round((today - last) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            stored.lastDate = todayStr;
+            stored.todayCount = 0;
+            saveStreakData(stored);
+            return stored;
+          } else if (diffDays > 1) {
+            stored.streak = 0;
+            stored.lastDate = todayStr;
+            stored.todayCount = 0;
+            saveStreakData(stored);
+            return stored;
+          }
+        }
+      } catch (_) {}
+      return { streak: 1, lastDate: todayStr, todayCount: 0, dailyGoal: 5 };
+    }
+
+    function saveStreakData(data) {
+      try {
+        localStorage.setItem('speakup_streak_data_v1', JSON.stringify(data));
+      } catch (_) {}
+    }
+
+    function updateStreakDisplay() {
+      const data = getStreakData();
+      const streakEl = document.getElementById('streakCountDisplay');
+      if (streakEl) streakEl.innerText = `${data.streak || 1}d`;
+      const goalEl = document.getElementById('streakGoalDisplay');
+      if (goalEl) goalEl.innerText = `${data.todayCount || 0}/${data.dailyGoal || 5}`;
+    }
+
+    function recordStreakPractice() {
+      const data = getStreakData();
+      data.todayCount = (data.todayCount || 0) + 1;
+      if (data.todayCount === data.dailyGoal) {
+        data.streak = (data.streak || 0) + 1;
+        showMiniToast("🎉 Daily Goal Reached! 🔥 " + data.streak + " Days Streak!");
+      }
+      saveStreakData(data);
+      updateStreakDisplay();
+    }
+
+    // ==========================================
+    // 2. AI ROLEPLAY CONVERSATIONS SYSTEM
+    // ==========================================
+    const roleplayScenarios = [
+      {
+        id: 'interview',
+        icon: '💼',
+        title: 'Job Interview (জব ইন্টারভিউ)',
+        bangla: 'আন্তর্জাতিক চাকরির ইন্টারভিউতে আত্মবিশ্বাসের সাথে ইংরেজি বলা।',
+        level: 'Intermediate',
+        turns: [
+          {
+            ciri: "Hi! Welcome to our interview today. To start off, could you tell me a little about yourself and your background?",
+            hint: "বাংলায় ভাবো: তোমার বর্তমান ভূমিকা, অভিজ্ঞতা এবং মূল দক্ষতা সংক্ষেপে বলো।",
+            suggestions: [
+              "Sure! I'm a software developer with over two years of experience building modern web apps.",
+              "I graduated in CSE, and currently I focus on full-stack development with JavaScript and Python.",
+              "I'm passionate about building clean, user-friendly digital products."
+            ]
+          },
+          {
+            ciri: "That's very impressive! Could you share one major challenge you encountered in a recent project and how you tackled it?",
+            hint: "প্রজেক্টের কোনো সমস্যা এবং তুমি কীভাবে তার সমাধান করেছিলে তা বলো।",
+            suggestions: [
+              "We faced an unexpected API latency issue, so I optimized the database queries and caching.",
+              "There was a tight deadline, so I prioritized core modules and organized daily syncs.",
+              "Our deployment pipeline had issues, and I helped the team configure automated CI/CD checks."
+            ]
+          },
+          {
+            ciri: "Great problem-solving approach. Why do you feel our company is the right next step for your career?",
+            hint: "কোম্পানির ভিশন বা নতুন কিছু শেখার সুযোগ নিয়ে পজিটিভভাবে বলো।",
+            suggestions: [
+              "Your innovative products really stand out to me, and I want to contribute to that mission.",
+              "I'm looking for an environment where I can grow and take on challenging engineering problems.",
+              "I really admire your engineering culture and commitment to high code quality."
+            ]
+          },
+          {
+            ciri: "That aligns wonderfully with our values! Do you have any questions for me before we wrap up?",
+            hint: "ইন্টারভিউয়ারকে ১টি ভালো প্রশ্ন করো (যেমন: 'What does a typical day look like in this role?')",
+            suggestions: [
+              "Yes! What does a typical day look like for someone in this role?",
+              "Could you tell me more about the team dynamic and upcoming goals?",
+              "What are the biggest challenges the team is currently working on?"
+            ],
+            isFinal: true,
+            finalMessage: "Excellent question! Our team collaborates closely in sprint cycles with high autonomy. It was fantastic speaking with you today—you communicated your thoughts with great clarity and professionalism! 🌟"
+          }
+        ]
+      },
+      {
+        id: 'cafe',
+        icon: '☕',
+        title: 'Coffee Shop Ordering (ক্যাফেতে অর্ডার)',
+        bangla: 'ক্যাফে বা রেস্তোরাঁয় প্রাকৃতিকভাবে কফি ও স্ন্যাক্স অর্ডার করা।',
+        level: 'Beginner',
+        turns: [
+          {
+            ciri: "Hi there! Welcome to Bean & Brew. What can I get started for you today?",
+            hint: "বলো কী কফি বা ড্রিংক নিতে চাও (e.g., 'Could I get an iced Americano, please?')",
+            suggestions: [
+              "Hi! Could I get an iced Americano with light ice, please?",
+              "Hey, I'd like a cappuccino with oat milk, please.",
+              "Can I just get a hot caramel latte to go?"
+            ]
+          },
+          {
+            ciri: "Sure thing! What size would you like that—small, medium, or large?",
+            hint: "সাইজ উল্লেখ করো এবং টেক-অ্যাওয়ে নাকি এখানে খাবে তা বলো।",
+            suggestions: [
+              "A medium would be great, please.",
+              "Make that a large, thanks!",
+              "Small is good, and it's for here."
+            ]
+          },
+          {
+            ciri: "Got it. Would you care for any pastries or warm breakfast wraps to go with that?",
+            hint: "কিছু চাইলে বলো, অথবা ভদ্রভাবে 'না, ধন্যবাদ' বলো (e.g. 'I'm good for now, thanks!')",
+            suggestions: [
+              "No thanks, that'll be all for today!",
+              "Actually, I'll grab one of those chocolate croissants too.",
+              "Just the coffee today, thank you."
+            ]
+          },
+          {
+            ciri: "Perfect! Your total comes to $5.25. How would you like to pay today—cash or card?",
+            hint: "পেমেন্ট মাধ্যম বলো (e.g., 'Card, please' বা 'Can I tap my phone?')",
+            suggestions: [
+              "I'll pay by card, please.",
+              "Can I tap with Apple Pay?",
+              "Here's cash, keep the change!"
+            ],
+            isFinal: true,
+            finalMessage: "You're all set! We'll have that right out for you in a moment. Awesome job ordering like a native speaker! ☕"
+          }
+        ]
+      },
+      {
+        id: 'standup',
+        icon: '💻',
+        title: 'Daily Standup & Client Sync (অফিস মিটিং)',
+        bangla: 'প্রজেক্টের কাজের আপডেট, অগ্রগতি ও ব্লকার সংক্ষেপে জানানো।',
+        level: 'Intermediate',
+        turns: [
+          {
+            ciri: "Morning everyone! Let's kick off our daily standup. Could you give us a quick status update on what you worked on yesterday?",
+            hint: "গতকাল কী কাজ সম্পন্ন করেছ তা পাস্ট টেন্সে বলো (e.g., 'Yesterday, I finished up the authentication flow...')",
+            suggestions: [
+              "Yesterday, I wrapped up the user login API and wrote unit tests for it.",
+              "I investigated the responsiveness bug on mobile and fixed the header layout.",
+              "I finished reviewing the pull requests and pushed the staging build."
+            ]
+          },
+          {
+            ciri: "Awesome progress! And what's on your radar for today?",
+            hint: "আজকের পরিকল্পনা প্রেজেন্ট বা ফিউচার টেন্সে বলো (e.g., 'Today, I'm diving into the payment gateway integration...')",
+            suggestions: [
+              "Today, I'm diving into the payment gateway integration.",
+              "I plan to deploy the database migration and verify analytics events.",
+              "I'll be syncing with the design team to finalize the dashboard components."
+            ]
+          },
+          {
+            ciri: "Sounds solid. Are there any blockers or anything holding you back from making progress?",
+            hint: "কোনো সমস্যা আছে কি না বলো (e.g., 'No blockers on my end' বা 'I need review on PR #42...')",
+            suggestions: [
+              "No blockers on my end, everything is smooth sailing!",
+              "I just need someone to review my pull request so we can merge.",
+              "I'm waiting on API credentials from the third-party provider, but otherwise good."
+            ],
+            isFinal: true,
+            finalMessage: "Sounds like a crystal-clear update! Concise, professional, and confident. Keep up the high momentum! 🚀"
+          }
+        ]
+      },
+      {
+        id: 'immigration',
+        icon: '✈️',
+        title: 'Airport & Immigration (এয়ারপোর্ট ও ইমিগ্রেশন)',
+        bangla: 'বিদেশ ভ্রমণ ও ভিসা কাউন্টারে অফিসারদের প্রশ্নের সঠিক উত্তর দেওয়া।',
+        level: 'Intermediate',
+        turns: [
+          {
+            ciri: "Good morning. May I see your passport and boarding pass, please? What is the main purpose of your visit?",
+            hint: "পাসপোর্ট দিয়ে ভ্রমণের উদ্দেশ্য বলো (Tourism, Business conference, Studies)",
+            suggestions: [
+              "Good morning, here you go. I'm here for a business tech conference.",
+              "Here is my passport. I'm visiting for tourism and sightseeing.",
+              "Here you go. I'm here to attend a friend's wedding and travel around."
+            ]
+          },
+          {
+            ciri: "Thank you. And how long do you intend to stay in the country?",
+            hint: "কয় দিন বা কত সপ্তাহ থাকবে তা নির্দিষ্টভাবে বলো (e.g., 'I will be staying for two weeks.')",
+            suggestions: [
+              "I will be staying for about ten days; my return flight is on the 20th.",
+              "Just for two weeks. Here is my return flight confirmation.",
+              "For one month, until my course finishes."
+            ]
+          },
+          {
+            ciri: "Where will you be staying during your time here?",
+            hint: "হোটেল বা বন্ধুর বাসার ঠিকানা/নাম উল্লেখ করো।",
+            suggestions: [
+              "I have a reservation at the Hilton Hotel downtown.",
+              "I'll be staying with my cousin in North London; here is the address.",
+              "At an Airbnb near the convention center."
+            ]
+          },
+          {
+            ciri: "Are you carrying any restricted items, fresh food, or currency over $10,000?",
+            hint: "ভদ্রভাবে 'No, nothing to declare' বলো।",
+            suggestions: [
+              "No, officer. Nothing to declare.",
+              "No restricted goods or cash exceeding limits.",
+              "No, just personal clothing and electronics."
+            ],
+            isFinal: true,
+            finalMessage: "All looks in order. Welcome, and enjoy your stay! 🛂 Excellent composure and concise answers!"
+          }
+        ]
+      },
+      {
+        id: 'smalltalk',
+        icon: '🤝',
+        title: 'Weekend Small Talk (সহকর্মীর সাথে আড্ডা)',
+        bangla: 'বিদেশি সহকর্মী বা ক্লায়েন্টের সাথে ক্যাজুয়াল কুশল বিনিময়।',
+        level: 'Beginner',
+        turns: [
+          {
+            ciri: "Hey! Happy Monday! How was your weekend? Did you get up to anything exciting?",
+            hint: "উইকএন্ড কেমন কেটেছে ক্যাজুয়াল ভাষায় বলো (e.g., 'It was pretty relaxing, thanks!')",
+            suggestions: [
+              "Hey! It was pretty relaxing, thanks. I mostly caught up on some sleep and watched a movie.",
+              "It was great! Went out for dinner with some friends and explored the city.",
+              "Pretty quiet weekend on my end, just spent time with family."
+            ]
+          },
+          {
+            ciri: "Oh nice! That sounds like just what you needed. How's the weather out on your end today?",
+            hint: "আবহাওয়া নিয়ে সংক্ষিপ্ত কমেন্ট করো (e.g. 'It's a bit chilly today but sunny!')",
+            suggestions: [
+              "It's pretty pleasant today, bright and sunny!",
+              "A bit gloomy and drizzling outside, perfect coffee weather.",
+              "Quite warm today, but nice breeze in the evening."
+            ]
+          },
+          {
+            ciri: "Haha, totally agree! By the way, are you watching any good shows or reading anything interesting lately?",
+            hint: "কোনো মুভি, সিরিজ বা বই নিয়ে হালকা মন্তব্য করো।",
+            suggestions: [
+              "Actually yeah, I just started a sci-fi series on Netflix that's really hooked me!",
+              "Not much lately, mostly listening to tech podcasts while commuting.",
+              "I re-watched Inception over the weekend—such a masterpiece!"
+            ],
+            isFinal: true,
+            finalMessage: "Haha, loved chatting with you! You sound totally relaxed and natural. Great conversational flow! 🌟"
+          }
+        ]
+      }
+    ];
+
+    let currentRoleplayScenario = null;
+    let currentRoleplayTurnIndex = 0;
+    let roleplaySpeechRecognition = null;
+    let isRoleplayListening = false;
+
+    function renderRoleplayScenarios() {
+      const grid = document.getElementById('roleplayScenariosGrid');
+      if (!grid) return;
+      grid.innerHTML = roleplayScenarios.map(sc => `
+        <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800/80 hover:border-purple-500/50 transition-all space-y-3 shadow-md flex flex-col justify-between group">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl p-2 rounded-xl bg-purple-950/60 border border-purple-800/40">${sc.icon}</span>
+              <span class="px-2.5 py-0.5 text-[10px] uppercase font-bold rounded-md bg-purple-950 text-purple-300 border border-purple-800/60">${sc.level}</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-100 group-hover:text-purple-300 transition">${sc.title}</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">${sc.bangla}</p>
+          </div>
+          <button onclick="startRoleplayScenario('${sc.id}')" class="w-full mt-2 py-2 px-3 text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-xl transition cursor-pointer shadow-md shadow-purple-600/20 flex items-center justify-center gap-1.5">
+            <span>Start Practice</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function startRoleplayScenario(scenarioId) {
+      currentRoleplayScenario = roleplayScenarios.find(s => s.id === scenarioId);
+      if (!currentRoleplayScenario) return;
+      currentRoleplayTurnIndex = 0;
+
+      document.getElementById('roleplaySelectorView').classList.add('hidden');
+      document.getElementById('roleplayActiveArena').classList.remove('hidden');
+
+      document.getElementById('roleplayActiveIcon').innerText = currentRoleplayScenario.icon;
+      document.getElementById('roleplayActiveTitle').innerText = currentRoleplayScenario.title.split('(')[0];
+      document.getElementById('roleplayMessages').innerHTML = '';
+
+      playCiriRoleplayTurn(0);
+    }
+
+    function exitRoleplay() {
+      document.getElementById('roleplayActiveArena').classList.add('hidden');
+      document.getElementById('roleplaySelectorView').classList.remove('hidden');
+      currentRoleplayScenario = null;
+      currentRoleplayTurnIndex = 0;
+      if (isRoleplayListening && roleplaySpeechRecognition) {
+        roleplaySpeechRecognition.stop();
+      }
+    }
+
+    function restartCurrentRoleplay() {
+      if (currentRoleplayScenario) {
+        startRoleplayScenario(currentRoleplayScenario.id);
+      }
+    }
+
+    function playCiriRoleplayTurn(turnIndex) {
+      if (!currentRoleplayScenario || turnIndex >= currentRoleplayScenario.turns.length) return;
+      currentRoleplayTurnIndex = turnIndex;
+      const turn = currentRoleplayScenario.turns[turnIndex];
+
+      const indicator = document.getElementById('roleplayTurnIndicator');
+      if (indicator) indicator.innerText = `Turn ${turnIndex + 1} of ${currentRoleplayScenario.turns.length}`;
+
+      appendCiriRoleplayMessage(turn.ciri, turn.hint);
+      renderRoleplayQuickChips(turn.suggestions);
+
+      if (autoPlayVoice) {
+        setTimeout(() => speakText(turn.ciri), 300);
+      }
+    }
+
+    function appendCiriRoleplayMessage(text, hint) {
+      const container = document.getElementById('roleplayMessages');
+      if (!container) return;
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start gap-3 text-xs sm:text-sm animate-fade-in";
+      const escaped = text.replace(/'/g, "\\'");
+      msgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white font-extrabold shrink-0 shadow-md">
+          C
+        </div>
+        <div class="space-y-1.5 max-w-[85%]">
+          <div class="p-3.5 rounded-2xl rounded-tl-sm bg-indigo-950/50 border border-indigo-800/60 text-slate-100 leading-relaxed shadow-sm">
+            ${text}
+            <button onclick="speakText('${escaped}')" title="Listen" class="ml-2 text-indigo-400 hover:text-indigo-200 inline-block align-middle cursor-pointer">
+              <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+            </button>
+          </div>
+          ${hint ? `<div class="text-[11px] text-amber-300/90 pl-1 font-medium flex items-center gap-1"><span>💡 ইঙ্গিত:</span> <span>${hint}</span></div>` : ''}
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendUserRoleplayMessage(text) {
+      const container = document.getElementById('roleplayMessages');
+      if (!container) return;
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start justify-end gap-3 text-xs sm:text-sm";
+      msgDiv.innerHTML = `
+        <div class="space-y-1.5 max-w-[85%] flex flex-col items-end">
+          <div class="p-3.5 rounded-2xl rounded-tr-sm bg-purple-600/90 text-white leading-relaxed shadow-md">
+            ${text}
+          </div>
+          <span class="text-[10px] text-slate-500 font-mono">You • Spoken</span>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold shrink-0">
+          👤
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderRoleplayQuickChips(suggestions) {
+      const container = document.getElementById('roleplayQuickChips');
+      if (!container) return;
+      if (!suggestions || suggestions.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = suggestions.map(s => {
+        const escaped = s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        return `
+          <button onclick="useRoleplayChip('${escaped}')" class="shrink-0 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 text-slate-300 hover:text-white transition cursor-pointer flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+            <span>"${s}"</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function useRoleplayChip(text) {
+      const input = document.getElementById('roleplayInput');
+      if (input) {
+        input.value = text;
+        sendRoleplayUserReply();
+      }
+    }
+
+    function sendRoleplayUserReply() {
+      const input = document.getElementById('roleplayInput');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      appendUserRoleplayMessage(text);
+      recordStreakPractice();
+
+      const turn = currentRoleplayScenario.turns[currentRoleplayTurnIndex];
+      const isLastTurn = currentRoleplayTurnIndex >= currentRoleplayScenario.turns.length - 1;
+
+      setTimeout(() => {
+        if (isLastTurn) {
+          const finalMsg = turn.finalMessage || "Fantastic conversation! You expressed yourself with remarkable poise and natural vocabulary. High five! 🌟";
+          appendCiriRoleplayMessage(finalMsg, null);
+          if (autoPlayVoice) speakText(finalMsg);
+          renderRoleplayQuickChips([]);
+          showRoleplayCompletedBanner();
+        } else {
+          playCiriRoleplayTurn(currentRoleplayTurnIndex + 1);
+        }
+      }, 700);
+    }
+
+    function showRoleplayCompletedBanner() {
+      const container = document.getElementById('roleplayMessages');
+      if (!container) return;
+      const div = document.createElement('div');
+      div.className = "p-4 rounded-2xl bg-gradient-to-r from-purple-950/60 to-indigo-950/60 border border-purple-500/40 text-center space-y-2.5 mt-2";
+      div.innerHTML = `
+        <div class="text-2xl">🎉</div>
+        <h4 class="text-sm font-bold text-white">Scenario Complete!</h4>
+        <p class="text-xs text-slate-300">You successfully held an authentic English dialogue from start to finish.</p>
+        <button onclick="exitRoleplay()" class="px-4 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl transition cursor-pointer shadow-md">
+          Explore Another Scenario →
+        </button>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function toggleRoleplaySpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not available in this browser. You can type directly!");
+        return;
+      }
+
+      if (!roleplaySpeechRecognition) {
+        roleplaySpeechRecognition = new SpeechRecognition();
+        roleplaySpeechRecognition.lang = 'en-US';
+        roleplaySpeechRecognition.continuous = false;
+        roleplaySpeechRecognition.interimResults = false;
+
+        roleplaySpeechRecognition.onstart = () => {
+          isRoleplayListening = true;
+          const label = document.getElementById('roleplayMicLabel');
+          if (label) label.innerText = "Listening...";
+          const btn = document.getElementById('roleplayMicBtn');
+          if (btn) btn.classList.add('bg-rose-950', 'border-rose-500');
+        };
+
+        roleplaySpeechRecognition.onresult = (e) => {
+          const transcript = e.results[0][0].transcript;
+          const input = document.getElementById('roleplayInput');
+          if (input) {
+            input.value = transcript;
+            sendRoleplayUserReply();
+          }
+        };
+
+        roleplaySpeechRecognition.onerror = () => {
+          stopRoleplayListening();
+        };
+
+        roleplaySpeechRecognition.onend = () => {
+          stopRoleplayListening();
+        };
+      }
+
+      if (isRoleplayListening) {
+        roleplaySpeechRecognition.stop();
+        stopRoleplayListening();
+      } else {
+        try {
+          roleplaySpeechRecognition.start();
+        } catch (_) {}
+      }
+    }
+
+    function stopRoleplayListening() {
+      isRoleplayListening = false;
+      const label = document.getElementById('roleplayMicLabel');
+      if (label) label.innerText = "Speak";
+      const btn = document.getElementById('roleplayMicBtn');
+      if (btn) btn.classList.remove('bg-rose-950', 'border-rose-500');
+    }
+
     // PWA Install Prompt Logic
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -1465,6 +2084,7 @@
       initSpeechRecognition();
       updateNotesBadge();
       updatePracticeMetrics();
+      updateStreakDisplay();
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg error:', err));
