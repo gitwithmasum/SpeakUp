@@ -1,9 +1,13 @@
-const CACHE_NAME = 'speakup-v1';
+const CACHE_NAME = 'speakup-v2';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './assets/logo.svg',
-  './assets/banner.svg'
+  './assets/banner.svg',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/apple-touch-icon.png',
+  './assets/favicon.png'
 ];
 
 self.addEventListener('install', (e) => {

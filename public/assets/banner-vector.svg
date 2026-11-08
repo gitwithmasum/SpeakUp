@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bannerBg" cx="50%" cy="20%" r="85%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="45%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+
+    <!-- Glowing Highlights -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="35%" stop-color="#e0e7ff" />
+      <stop offset="70%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+
+    <!-- Card Background -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+
+    <filter id="bannerGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="24" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#334155" stroke-width="0.75" stroke-opacity="0.25" />
+    </pattern>
+  </defs>
+
+  <!-- Banner Background Container -->
+  <rect width="1200" height="440" rx="20" fill="url(#bannerBg)" stroke="#334155" stroke-width="2" />
+  <rect width="1200" height="440" rx="20" fill="url(#grid)" />
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="200" cy="100" r="140" fill="#4f46e5" opacity="0.2" filter="url(#bannerGlow)" />
+  <circle cx="1000" cy="220" r="160" fill="#06b6d4" opacity="0.15" filter="url(#bannerGlow)" />
+  <circle cx="600" cy="380" r="180" fill="#ec4899" opacity="0.12" filter="url(#bannerGlow)" />
+
+  <!-- LEFT / MAIN HERO CONTENT -->
+  <g transform="translate(80, 70)">
+    
+    <!-- Top Pill Badge -->
+    <rect width="265" height="32" rx="16" fill="#1e1b4b" stroke="#6366f1" stroke-width="1.2" stroke-opacity="0.6" />
+    <circle cx="16" cy="16" r="5" fill="#10b981" />
+    <text x="32" y="21" fill="#c7d2fe" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" letter-spacing="0.5">
+      AI ENGLISH COACH &amp; SIMULATOR
+    </text>
+
+    <!-- Main Title -->
+    <text x="0" y="95" fill="url(#textGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="64" font-weight="900" letter-spacing="-1">
+      SpeakUp
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="132" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400">
+      Master native-level English fluency with instant diagnostic feedback.
+    </text>
+    <text x="0" y="160" fill="#cbd5e1" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="500">
+      Designed specifically for <tspan fill="#38bdf8" font-weight="700">Bangla Speakers</tspan> — Speaking • Grammar • Pronunciation
+    </text>
+
+    <!-- Feature Pill Badges -->
+    <g transform="translate(0, 195)">
+      <!-- Badge 1 -->
+      <g transform="translate(0, 0)">
+        <rect width="135" height="34" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+        <text x="14" y="21" fill="#e2e8f0" font-family="sans-serif" font-size="12" font-weight="600">🎙️ Voice Input (STT)</text>
+      </g>
+      <!-- Badge 2 -->
+      <g transform="translate(145, 0)">
+        <rect width="135" height="34" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+        <text x="14" y="21" fill="#e2e8f0" font-family="sans-serif" font-size="12" font-weight="600">🔊 Native Voice (TTS)</text>
+      </g>
+      <!-- Badge 3 -->
+      <g transform="translate(290, 0)">
+        <rect width="145" height="34" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+        <text x="14" y="21" fill="#e2e8f0" font-family="sans-serif" font-size="12" font-weight="600">💡 Bangla Diagnostic</text>
+      </g>
+      <!-- Badge 4 -->
+      <g transform="translate(445, 0)">
+        <rect width="125" height="34" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
+        <text x="14" y="21" fill="#e2e8f0" font-family="sans-serif" font-size="12" font-weight="600">⚡ Real-Time Card</text>
+      </g>
+    </g>
+
+    <!-- Bottom Tech Stack / Meta -->
+    <g transform="translate(0, 255)">
+      <text x="0" y="16" fill="#64748b" font-family="monospace" font-size="12">
+        Zero Config • Web Speech API • Tailwind UI • Node.js / Browser LocalStorage
+      </text>
+    </g>
+  </g>
+
+  <!-- RIGHT SIDE: INTERACTIVE FEEDBACK CARD VISUAL MOCKUP -->
+  <g transform="translate(710, 60)">
+    <!-- Card Outer Box -->
+    <rect width="420" height="315" rx="18" fill="url(#cardGrad)" stroke="#3b82f6" stroke-width="1.5" stroke-opacity="0.4" filter="url(#bannerGlow)" />
+    <rect width="420" height="315" rx="18" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+
+    <!-- Card Header / Verdict Banner -->
+    <rect x="18" y="18" width="384" height="48" rx="12" fill="#881337" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1" stroke-opacity="0.5" />
+    <text x="34" y="47" font-size="20">❌</text>
+    <text x="66" y="40" fill="#fda4af" font-family="sans-serif" font-size="12" font-weight="700" letter-spacing="0.5">VERDICT: POLISH NEEDED</text>
+    <text x="66" y="55" fill="#fecdd3" font-family="sans-serif" font-size="10.5">Let's fix the structure for native flow!</text>
+
+    <!-- Original vs Correct Box -->
+    <g transform="translate(18, 80)">
+      <!-- Mine -->
+      <rect width="384" height="44" rx="10" fill="#020617" stroke="#1e293b" stroke-width="1" />
+      <text x="14" y="18" fill="#f43f5e" font-family="sans-serif" font-size="10" font-weight="700">✍️ MINE:</text>
+      <text x="75" y="28" fill="#cbd5e1" font-family="monospace" font-size="12">"I am agree with your opinion."</text>
+    </g>
+
+    <g transform="translate(18, 134)">
+      <!-- Correct -->
+      <rect width="384" height="44" rx="10" fill="#022c22" fill-opacity="0.4" stroke="#059669" stroke-width="1" stroke-opacity="0.4" />
+      <text x="14" y="18" fill="#34d399" font-family="sans-serif" font-size="10" font-weight="700">✔️ CORRECT:</text>
+      <text x="92" y="28" fill="#a7f3d0" font-family="sans-serif" font-size="12.5" font-weight="600">"I agree with your opinion."</text>
+    </g>
+
+    <!-- Why in Bangla -->
+    <g transform="translate(18, 188)">
+      <rect width="384" height="52" rx="10" fill="#451a03" fill-opacity="0.3" stroke="#d97706" stroke-width="1" stroke-opacity="0.4" />
+      <text x="14" y="18" fill="#fbbf24" font-family="sans-serif" font-size="10" font-weight="700">💡 WHY (কারণ):</text>
+      <text x="14" y="38" fill="#fef3c7" font-family="-apple-system, BlinkMacSystemFont, 'SolaimanLipi', sans-serif" font-size="11.5">
+        'Agree' নিজেই একটি Verb, তাই 'am agree' হবে না।
+      </text>
+    </g>
+
+    <!-- Native & Audio Bar -->
+    <g transform="translate(18, 250)">
+      <rect width="384" height="45" rx="10" fill="#1e1b4b" fill-opacity="0.5" stroke="#6366f1" stroke-width="1" stroke-opacity="0.4" />
+      <text x="14" y="18" fill="#818cf8" font-family="sans-serif" font-size="10" font-weight="700">🗣️ SAY IT LIKE A NATIVE:</text>
+      <text x="14" y="36" fill="#e0e7ff" font-family="sans-serif" font-size="11.5" font-style="italic">
+        "I'm totally on board with that!" 🔊
+      </text>
+    </g>
+  </g>
+</svg>
