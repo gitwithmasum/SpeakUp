@@ -115,7 +115,7 @@
     </div>
 
     <!-- Navigation Tabs (Segmented Control Pill Bar) -->
-    <div class="inline-flex p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 shadow-inner gap-1.5 text-xs sm:text-sm">
+    <div class="inline-flex p-1.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 shadow-inner gap-1.5 text-xs sm:text-sm flex-wrap">
       <button onclick="switchTab('arena')" id="tabArena" class="px-4 py-2 font-semibold rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
         Practice Arena
@@ -128,6 +128,11 @@
       <button onclick="switchTab('commonMistakes')" id="tabMistakes" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
         Top Bangla Pitfalls
+      </button>
+      <button onclick="switchTab('notes')" id="tabNotes" class="px-4 py-2 font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 transition-all flex items-center gap-2 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Study Notes
+        <span id="notesCountBadge" class="px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 rounded-full font-bold">0</span>
       </button>
     </div>
 
@@ -261,27 +266,47 @@
             
             <!-- Bangla Explanation -->
             <div>
-              <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
-                <span>💡 Why (ভুলের মূল কারণ ও সহজ ব্যাখ্যা):</span>
+              <div class="flex items-center justify-between">
+                <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                  <span>💡 Why (ভুলের মূল কারণ ও সহজ ব্যাখ্যা):</span>
+                </div>
+                <button id="addNoteWhyBtn" onclick="toggleSaveNote('why')" title="Add to Notes" class="group flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white text-xs transition cursor-pointer font-medium shadow-sm">
+                  <span id="iconNoteWhy" class="text-sm font-bold leading-none text-slate-300 group-hover:scale-125 transition">+</span>
+                  <span id="textNoteWhy" class="text-[10px] tracking-wide">Note</span>
+                </button>
               </div>
               <div id="cardWhy" class="text-xs sm:text-sm mt-1.5 text-amber-200/95 bg-amber-950/20 border border-amber-900/40 rounded-xl p-3 leading-relaxed"></div>
             </div>
 
             <!-- Vocabulary Booster -->
             <div>
-              <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
-                <span>📚 Vocab Booster (Related Power Words):</span>
+              <div class="flex items-center justify-between">
+                <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+                  <span>📚 Vocab Booster (Related Power Words):</span>
+                </div>
+                <button id="addNoteVocabBtn" onclick="toggleSaveNote('vocab')" title="Add to Notes" class="group flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white text-xs transition cursor-pointer font-medium shadow-sm">
+                  <span id="iconNoteVocab" class="text-sm font-bold leading-none text-slate-300 group-hover:scale-125 transition">+</span>
+                  <span id="textNoteVocab" class="text-[10px] tracking-wide">Note</span>
+                </button>
               </div>
               <div id="cardVocab" class="text-xs mt-1.5 space-y-2 text-slate-300 bg-slate-900/60 border border-slate-800/80 rounded-xl p-3"></div>
             </div>
 
             <!-- Pronunciation Tip -->
             <div>
-              <div class="text-[11px] font-bold text-pink-400 uppercase tracking-wider flex items-center justify-between">
-                <span>🎯 Pronunciation Tip:</span>
-                <span id="pronunciationAudioTrigger" class="cursor-pointer text-pink-400 hover:text-pink-300 p-1 rounded-lg hover:bg-pink-950/30 transition">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-                </span>
+              <div class="flex items-center justify-between">
+                <div class="text-[11px] font-bold text-pink-400 uppercase tracking-wider">
+                  <span>🎯 Pronunciation Tip:</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span id="pronunciationAudioTrigger" title="Listen" class="cursor-pointer text-pink-400 hover:text-pink-300 p-1 rounded-lg hover:bg-pink-950/30 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                  </span>
+                  <button id="addNotePronBtn" onclick="toggleSaveNote('pron')" title="Add to Notes" class="group flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white text-xs transition cursor-pointer font-medium shadow-sm">
+                    <span id="iconNotePron" class="text-sm font-bold leading-none text-slate-300 group-hover:scale-125 transition">+</span>
+                    <span id="textNotePron" class="text-[10px] tracking-wide">Note</span>
+                  </button>
+                </div>
               </div>
               <div id="cardPronunciation" class="text-xs mt-1.5 text-pink-200/90 bg-pink-950/20 border border-pink-900/40 rounded-xl p-3"></div>
             </div>
@@ -357,6 +382,39 @@
           <button onclick="testInArena('I am living here since 5 years')" class="text-indigo-400 hover:underline text-xs pt-1 font-semibold cursor-pointer">Try in Arena →</button>
         </div>
       </div>
+    </div>
+
+    <!-- TAB 4: STUDY NOTES NOTEBOOK -->
+    <div id="viewNotes" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>📓 My Study Notes (সংরক্ষিত গুরুত্বপূর্ণ বিষয়)</span>
+            <span id="notesTotalTag" class="px-2.5 py-0.5 text-xs bg-amber-500/20 text-amber-300 rounded-full font-bold">0 notes</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Your saved grammar rules, power vocabulary, and pronunciation tips for rapid review.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button onclick="filterNotes('all')" class="note-filter-btn active px-3 py-1 text-xs rounded-lg bg-indigo-600 text-white font-semibold transition">All</button>
+            <button onclick="filterNotes('why')" class="note-filter-btn px-3 py-1 text-xs rounded-lg text-slate-400 hover:text-white font-medium transition">💡 Grammar</button>
+            <button onclick="filterNotes('vocab')" class="note-filter-btn px-3 py-1 text-xs rounded-lg text-slate-400 hover:text-white font-medium transition">📚 Vocab</button>
+            <button onclick="filterNotes('pron')" class="note-filter-btn px-3 py-1 text-xs rounded-lg text-slate-400 hover:text-white font-medium transition">🎯 Pron</button>
+          </div>
+          <button onclick="clearAllNotes()" class="px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-rose-900/40 rounded-xl transition cursor-pointer font-medium">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Notes Cards List -->
+      <div id="notesList" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- Mini Toast Popup -->
+    <div id="miniToast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 px-4 py-2.5 rounded-2xl bg-slate-900/95 border border-emerald-500/50 text-emerald-300 text-xs font-semibold shadow-2xl flex items-center gap-2.5 backdrop-blur-md">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span id="miniToastMsg">Saved to Study Notes!</span>
     </div>
 
     <!-- Bottom Coach Tip & Audio Status -->
@@ -709,16 +767,20 @@
     }
 
     // Tab Switching
+    let currentNotesFilter = 'all';
     function switchTab(tabId) {
       document.getElementById('viewArena').classList.add('hidden');
       document.getElementById('viewChallenges').classList.add('hidden');
       document.getElementById('viewCommonMistakes').classList.add('hidden');
+      document.getElementById('viewNotes').classList.add('hidden');
 
-      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes'];
+      const tabs = ['tabArena', 'tabChallenges', 'tabMistakes', 'tabNotes'];
       tabs.forEach(t => {
         const btn = document.getElementById(t);
-        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
-        btn.classList.add('text-slate-400');
+        if (btn) {
+          btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+          btn.classList.add('text-slate-400');
+        }
       });
 
       if (tabId === 'arena') {
@@ -737,6 +799,12 @@
         const activeBtn = document.getElementById('tabMistakes');
         activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
         activeBtn.classList.remove('text-slate-400');
+      } else if (tabId === 'notes') {
+        document.getElementById('viewNotes').classList.remove('hidden');
+        const activeBtn = document.getElementById('tabNotes');
+        activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+        activeBtn.classList.remove('text-slate-400');
+        renderNotes(currentNotesFilter);
       }
     }
 
@@ -877,6 +945,7 @@
     }
 
     function displayFeedback(data) {
+      currentFeedbackData = data;
       const card = document.getElementById('feedbackCard');
       card.classList.remove('hidden');
 
@@ -909,6 +978,9 @@
       document.getElementById('cardVocab').innerHTML = data.vocab.split(',').map(v => `<div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span>${v.trim()}</span></div>`).join('');
       document.getElementById('cardPronunciation').innerText = data.pronunciation;
 
+      // Update the 3 Note buttons (+ to ✓ if already saved)
+      updateNoteButtonsState();
+
       const audioTrigger = document.getElementById('pronunciationAudioTrigger');
       audioTrigger.onclick = () => speakText(data.pronunciation.split(':')[0] || data.correct);
 
@@ -919,6 +991,244 @@
       }
 
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Study Notes System Logic
+    let currentFeedbackData = null;
+
+    function getStoredNotes() {
+      try {
+        return JSON.parse(localStorage.getItem('speakup_study_notes_v1') || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveStoredNotes(notes) {
+      try {
+        localStorage.setItem('speakup_study_notes_v1', JSON.stringify(notes));
+      } catch (_) {}
+    }
+
+    function updateNotesBadge() {
+      const notes = getStoredNotes();
+      const badge = document.getElementById('notesCountBadge');
+      if (badge) badge.innerText = notes.length;
+      const totalTag = document.getElementById('notesTotalTag');
+      if (totalTag) totalTag.innerText = `${notes.length} note${notes.length === 1 ? '' : 's'}`;
+    }
+
+    function markButtonSaved(btnId, iconId, textId) {
+      const btn = document.getElementById(btnId);
+      const icon = document.getElementById(iconId);
+      const text = document.getElementById(textId);
+      if (!btn) return;
+      btn.className = "flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-emerald-500/50 bg-emerald-950/60 text-emerald-400 text-xs transition cursor-pointer font-semibold shadow-sm shadow-emerald-500/20";
+      if (icon) icon.innerHTML = "✓";
+      if (text) text.innerText = "Saved";
+    }
+
+    function resetButton(btnId, iconId, textId) {
+      const btn = document.getElementById(btnId);
+      const icon = document.getElementById(iconId);
+      const text = document.getElementById(textId);
+      if (!btn) return;
+      btn.className = "group flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white text-xs transition cursor-pointer font-medium shadow-sm";
+      if (icon) icon.innerHTML = "+";
+      if (text) text.innerText = "Note";
+    }
+
+    function updateNoteButtonsState() {
+      if (!currentFeedbackData) return;
+      const notes = getStoredNotes();
+
+      const isWhySaved = notes.some(n => n.type === 'why' && n.content === currentFeedbackData.why);
+      if (isWhySaved) markButtonSaved('addNoteWhyBtn', 'iconNoteWhy', 'textNoteWhy');
+      else resetButton('addNoteWhyBtn', 'iconNoteWhy', 'textNoteWhy');
+
+      const isVocabSaved = notes.some(n => n.type === 'vocab' && n.content === currentFeedbackData.vocab);
+      if (isVocabSaved) markButtonSaved('addNoteVocabBtn', 'iconNoteVocab', 'textNoteVocab');
+      else resetButton('addNoteVocabBtn', 'iconNoteVocab', 'textNoteVocab');
+
+      const isPronSaved = notes.some(n => n.type === 'pron' && n.content === currentFeedbackData.pronunciation);
+      if (isPronSaved) markButtonSaved('addNotePronBtn', 'iconNotePron', 'textNotePron');
+      else resetButton('addNotePronBtn', 'iconNotePron', 'textNotePron');
+    }
+
+    function toggleSaveNote(type) {
+      if (!currentFeedbackData) return;
+      let notes = getStoredNotes();
+      let content = "";
+      let title = "";
+      let btnId = "";
+      let iconId = "";
+      let textId = "";
+
+      if (type === 'why') {
+        content = currentFeedbackData.why;
+        title = `💡 Grammar: "${currentFeedbackData.correct}"`;
+        btnId = 'addNoteWhyBtn';
+        iconId = 'iconNoteWhy';
+        textId = 'textNoteWhy';
+      } else if (type === 'vocab') {
+        content = currentFeedbackData.vocab;
+        title = `📚 Vocab: "${currentFeedbackData.correct}"`;
+        btnId = 'addNoteVocabBtn';
+        iconId = 'iconNoteVocab';
+        textId = 'textNoteVocab';
+      } else if (type === 'pron') {
+        content = currentFeedbackData.pronunciation;
+        title = `🎯 Pronunciation: "${currentFeedbackData.correct}"`;
+        btnId = 'addNotePronBtn';
+        iconId = 'iconNotePron';
+        textId = 'textNotePron';
+      }
+
+      const existingIndex = notes.findIndex(n => n.type === type && n.content === content);
+
+      if (existingIndex > -1) {
+        notes.splice(existingIndex, 1);
+        saveStoredNotes(notes);
+        resetButton(btnId, iconId, textId);
+        showMiniToast("Removed from Study Notes");
+      } else {
+        const newNote = {
+          id: Date.now(),
+          type: type,
+          title: title,
+          content: content,
+          sentence: currentFeedbackData.correct,
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        };
+        notes.unshift(newNote);
+        saveStoredNotes(notes);
+        markButtonSaved(btnId, iconId, textId);
+        showMiniToast("Added to Study Notes! ✓");
+      }
+
+      updateNotesBadge();
+      if (!document.getElementById('viewNotes').classList.contains('hidden')) {
+        renderNotes(currentNotesFilter);
+      }
+    }
+
+    let toastTimer = null;
+    function showMiniToast(msg) {
+      const toast = document.getElementById('miniToast');
+      const msgEl = document.getElementById('miniToastMsg');
+      if (!toast || !msgEl) return;
+      msgEl.innerText = msg;
+      toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function renderNotes(filter) {
+      currentNotesFilter = filter;
+      const container = document.getElementById('notesList');
+      if (!container) return;
+      const notes = getStoredNotes();
+      const filtered = filter === 'all' ? notes : notes.filter(n => n.type === filter);
+
+      updateNotesBadge();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-center justify-center text-xl shadow-inner">
+              📓
+            </div>
+            <h3 class="text-sm font-semibold text-slate-200">No ${filter === 'all' ? 'notes' : filter} saved yet</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+              Click the <strong class="text-emerald-400">+ Note</strong> button next to any <strong>Why (ব্যাখ্যা)</strong>, <strong>Vocab</strong>, or <strong>Pronunciation</strong> tip in the feedback card to save it here!
+            </p>
+            <button onclick="switchTab('arena')" class="px-4 py-2 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition font-semibold cursor-pointer shadow-md">
+              Go to Practice Arena →
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        let tagColor = "bg-amber-950/90 text-amber-300 border-amber-800/60";
+        let typeName = "💡 Grammar / Why";
+        if (item.type === 'vocab') {
+          tagColor = "bg-cyan-950/90 text-cyan-300 border-cyan-800/60";
+          typeName = "📚 Vocab";
+        } else if (item.type === 'pron') {
+          tagColor = "bg-pink-950/90 text-pink-300 border-pink-800/60";
+          typeName = "🎯 Pronunciation";
+        }
+
+        return `
+          <div class="p-4 rounded-2xl bg-slate-950/90 border border-slate-800/80 hover:border-indigo-500/40 transition-all space-y-3 shadow-md">
+            <div class="flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="inline-block px-2.5 py-0.5 text-[10px] uppercase font-bold rounded-md ${tagColor} border">${typeName}</span>
+                  <span class="text-[11px] text-slate-500 font-mono">${item.date}</span>
+                </div>
+                <h4 class="text-xs font-semibold text-slate-300">${item.title}</h4>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="speakText('${item.sentence ? item.sentence.replace(/'/g, "\\'") : ''}')" title="Listen" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-300 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                </button>
+                <button onclick="copyNoteContent('${item.id}')" title="Copy text" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+                <button onclick="deleteSingleNote(${item.id})" title="Delete note" class="p-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/60 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans" id="noteContent_${item.id}">
+              ${item.content}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterNotes(filter) {
+      document.querySelectorAll('.note-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white', 'font-semibold');
+        btn.classList.add('text-slate-400');
+      });
+      if (event && event.target) {
+        event.target.classList.remove('text-slate-400');
+        event.target.classList.add('bg-indigo-600', 'text-white', 'font-semibold');
+      }
+      renderNotes(filter);
+    }
+
+    function deleteSingleNote(id) {
+      let notes = getStoredNotes().filter(n => n.id !== id);
+      saveStoredNotes(notes);
+      updateNotesBadge();
+      updateNoteButtonsState();
+      renderNotes(currentNotesFilter);
+      showMiniToast("Note deleted");
+    }
+
+    function clearAllNotes() {
+      if (!confirm("Are you sure you want to clear all saved study notes?")) return;
+      saveStoredNotes([]);
+      updateNotesBadge();
+      updateNoteButtonsState();
+      renderNotes(currentNotesFilter);
+      showMiniToast("All notes cleared");
+    }
+
+    function copyNoteContent(id) {
+      const el = document.getElementById(`noteContent_${id}`);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        showMiniToast("Copied to clipboard! 📋");
+      });
     }
 
     // PWA Install Prompt Logic
@@ -951,6 +1261,7 @@
         };
       }
       initSpeechRecognition();
+      updateNotesBadge();
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg error:', err));
