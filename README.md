@@ -2,10 +2,6 @@
   <img src="assets/banner.svg" alt="SpeakUp Banner" width="100%">
 </p>
 
-<p align="center">
-  <img src="assets/logo.svg" alt="SpeakUp Logo" width="110" height="110">
-</p>
-
 <h1 align="center">SpeakUp — AI English Coach & Simulator</h1>
 
 <p align="center">
