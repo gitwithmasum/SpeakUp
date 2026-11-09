@@ -12,31 +12,31 @@
     body {
       font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
       -webkit-font-smoothing: antialiased;
+      background-color: #000000 !important;
     }
     @media print {
       .no-print {
         display: none !important;
       }
-      body {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      html, body {
+        background-color: #000000 !important;
+        color: #f8fafc !important;
       }
       .card-box {
         page-break-inside: avoid !important;
-        border: 1px solid #cbd5e1 !important;
-        background-color: #f8fafc !important;
+        border: 1px solid #1e293b !important;
+        background-color: #090d16 !important;
         box-shadow: none !important;
-      }
-      .print-dark-text {
-        color: #0f172a !important;
-      }
-      .print-border {
-        border-color: #e2e8f0 !important;
       }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+<body class="bg-black text-slate-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
 
   <!-- Sticky Top Action Bar (Hidden on print) -->
   <div class="no-print max-w-4xl mx-auto mb-6 flex items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-md shadow-xl sticky top-4 z-50">
